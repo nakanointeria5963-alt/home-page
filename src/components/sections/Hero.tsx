@@ -9,7 +9,7 @@ export default function Hero() {
       className="relative flex min-h-screen flex-col items-center justify-center px-6 pt-24 text-center"
     >
       <motion.img
-        src="/logo.png"
+        src="/logo.jpg"
         alt="ROGUE PINK"
         className="mb-8 h-28 w-28 rounded-2xl shadow-[0_0_60px_rgba(255,46,136,0.35)] sm:h-36 sm:w-36"
         initial={{ opacity: 0, scale: 0.8, rotate: -8 }}
