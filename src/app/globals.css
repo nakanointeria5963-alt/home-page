@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0d0f16;
+  --background-elevated: #151827;
+  --foreground: #f5f3f7;
+  --muted: #a7a6b8;
+  --pink: #ff2e88;
+  --pink-light: #ff8fc4;
+  --pink-soft: #ffd1e8;
+  --border: rgba(255, 143, 196, 0.16);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-elevated: var(--background-elevated);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-pink: var(--pink);
+  --color-pink-light: var(--pink-light);
+  --color-pink-soft: var(--pink-soft);
+  --color-border: var(--border);
+  --font-sans: var(--font-noto-sans-jp);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--pink);
+  color: #ffffff;
+}
