@@ -1,5 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Noto_Sans_JP } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
+import MotionProvider from "@/components/MotionProvider";
 import "./globals.css";
 
 const notoSansJP = Noto_Sans_JP({
@@ -9,10 +11,34 @@ const notoSansJP = Noto_Sans_JP({
   display: "swap",
 });
 
+const SITE_URL = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "http://localhost:3000";
+
+const TITLE = "ROGUE PINK";
+const DESCRIPTION =
+  "ありがとうと言ってもらいたい。そして、ありがとうと言いたい。ROGUE PINKは、ひとりから始まる、なんでもありのブランドです。";
+
 export const metadata: Metadata = {
-  title: "ROGUE PINK",
-  description:
-    "ありがとうと言ってもらいたい。そして、ありがとうと言いたい。ROGUE PINKは、ひとりから始まる、なんでもありのブランドです。",
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    siteName: TITLE,
+    locale: "ja_JP",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0d0f16",
 };
 
 export default function RootLayout({
@@ -23,7 +49,8 @@ export default function RootLayout({
   return (
     <html lang="ja" className={`${notoSansJP.variable} h-full`}>
       <body className="min-h-full bg-background text-foreground antialiased">
-        {children}
+        <MotionProvider>{children}</MotionProvider>
+        <Analytics />
       </body>
     </html>
   );

@@ -1,12 +1,27 @@
 import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
-const BUSINESSES = [
+type Product = {
+  label: string;
+  url: string;
+};
+
+type Business = {
+  title: string;
+  description: string;
+  products?: Product[];
+};
+
+const BUSINESSES: Business[] = [
   {
     title: "アプリ開発",
     description:
       "誰でも自由に、簡単に使えるアプリを。社会に本当に役立つプロダクトをつくります。",
     products: [
-      { label: "禁酒サポートアプリ", url: "https://nakanointeria5963-alt.github.io/kinnsyu/" },
+      {
+        label: "禁酒サポートアプリ",
+        url: "https://nakanointeria5963-alt.github.io/kinnsyu/",
+      },
     ],
   },
   {
@@ -32,18 +47,12 @@ export default function Businesses() {
       id="businesses"
       className="mx-auto max-w-5xl px-6 py-32 sm:py-40"
     >
-      <Reveal>
-        <p className="text-center text-xs font-bold tracking-[0.4em] text-pink-light">
-          BUSINESSES
-        </p>
-        <h2 className="mt-4 text-center text-3xl font-black tracking-tight text-foreground sm:text-4xl">
-          やっていくこと
-        </h2>
+      <SectionHeading eyebrow="BUSINESSES" title="やっていくこと">
         <p className="mx-auto mt-6 max-w-xl text-center text-sm leading-loose text-muted sm:text-base">
           一人がひとつの商売しかできない時代は終わりました。
           ひとりで、いくつもの「ありがとう」を生み出していきます。
         </p>
-      </Reveal>
+      </SectionHeading>
 
       <div className="mt-16 grid gap-6 sm:grid-cols-2">
         {BUSINESSES.map((item, index) => (

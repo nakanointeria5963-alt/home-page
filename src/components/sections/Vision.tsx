@@ -1,16 +1,10 @@
 import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
 export default function Vision() {
   return (
     <section id="vision" className="mx-auto max-w-3xl px-6 py-32 sm:py-40">
-      <Reveal>
-        <p className="text-center text-xs font-bold tracking-[0.4em] text-pink-light">
-          VISION
-        </p>
-        <h2 className="mt-4 text-center text-3xl font-black tracking-tight text-foreground sm:text-4xl">
-          目指す世界
-        </h2>
-      </Reveal>
+      <SectionHeading eyebrow="VISION" title="目指す世界" />
 
       <Reveal delay={0.15}>
         <div className="mt-12 space-y-6 text-center text-base leading-loose text-muted sm:text-lg">
