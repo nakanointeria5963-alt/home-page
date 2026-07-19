@@ -19,9 +19,9 @@ export default function MascotBubble({
       }`}
     >
       <motion.img
-        src="/mascot.jpg"
+        src="/mascot.png"
         alt="ROGUE PINKのマスコット"
-        className="h-20 w-auto shrink-0 rounded-2xl border border-border object-cover shadow-[0_0_30px_rgba(255,46,136,0.15)] sm:h-24"
+        className="h-24 w-auto shrink-0 drop-shadow-[0_0_25px_rgba(255,46,136,0.25)] sm:h-28"
         animate={{ y: [0, -10, 0], rotate: [0, -3, 0, 3, 0] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
