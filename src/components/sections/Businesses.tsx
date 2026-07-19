@@ -5,6 +5,9 @@ const BUSINESSES = [
     title: "アプリ開発",
     description:
       "誰でも自由に、簡単に使えるアプリを。社会に本当に役立つプロダクトをつくります。",
+    products: [
+      { label: "禁酒サポートアプリ", url: "https://nakanointeria5963-alt.github.io/kinnsyu/" },
+    ],
   },
   {
     title: "音楽・映像制作",
@@ -55,6 +58,21 @@ export default function Businesses() {
               <p className="mt-4 text-sm leading-loose text-muted sm:text-base">
                 {item.description}
               </p>
+              {item.products && (
+                <div className="mt-6 flex flex-wrap gap-3">
+                  {item.products.map((product) => (
+                    <a
+                      key={product.url}
+                      href={product.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 rounded-full bg-pink/10 px-4 py-2 text-xs font-bold text-pink-light transition-colors hover:bg-pink hover:text-white sm:text-sm"
+                    >
+                      {product.label}を使ってみる →
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           </Reveal>
         ))}
