@@ -19,7 +19,7 @@ export default function MascotBubble({
       }`}
     >
       <motion.img
-        src="/mascot.svg"
+        src="/mascot.png"
         alt="ROGUE PINKのマスコット"
         className="h-20 w-auto shrink-0 sm:h-24"
         animate={{ y: [0, -10, 0], rotate: [0, -3, 0, 3, 0] }}
