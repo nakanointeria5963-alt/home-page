@@ -1,7 +1,8 @@
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
+import BusinessCard from "@/components/sections/BusinessCard";
 
-type Product = {
+export type Product = {
   label: string;
   url: string;
 };
@@ -9,6 +10,7 @@ type Product = {
 type Business = {
   title: string;
   description: string;
+  icon: string;
   products?: Product[];
 };
 
@@ -17,6 +19,7 @@ const BUSINESSES: Business[] = [
     title: "アプリ開発",
     description:
       "誰でも自由に、簡単に使えるアプリを。社会に本当に役立つプロダクトをつくります。",
+    icon: "📱",
     products: [
       {
         label: "禁酒サポートアプリ",
@@ -28,16 +31,19 @@ const BUSINESSES: Business[] = [
     title: "音楽・映像制作",
     description:
       "自分にしか出せない表現で、心を動かすエンターテインメントを届けます。",
+    icon: "🎵",
   },
   {
     title: "アパレル",
     description:
       "Tシャツなど、想いを乗せたプロダクトを形にして届けます。",
+    icon: "👕",
   },
   {
     title: "エコシステム",
     description:
       "生まれた利益を、また誰かのために使う。「ありがとう」がめぐる仕組みをつくります。",
+    icon: "♻️",
   },
 ];
 
@@ -57,32 +63,13 @@ export default function Businesses() {
       <div className="mt-16 grid gap-6 sm:grid-cols-2">
         {BUSINESSES.map((item, index) => (
           <Reveal key={item.title} delay={index * 0.1}>
-            <div className="group h-full rounded-2xl border border-border bg-background-elevated p-8 transition-all duration-300 hover:-translate-y-1 hover:border-pink/50 hover:shadow-[0_0_40px_rgba(255,46,136,0.15)]">
-              <span className="text-xs font-bold tracking-[0.3em] text-pink">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <h3 className="mt-3 text-xl font-black text-foreground sm:text-2xl">
-                {item.title}
-              </h3>
-              <p className="mt-4 text-sm leading-loose text-muted sm:text-base">
-                {item.description}
-              </p>
-              {item.products && (
-                <div className="mt-6 flex flex-wrap gap-3">
-                  {item.products.map((product) => (
-                    <a
-                      key={product.url}
-                      href={product.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 rounded-full bg-pink/10 px-4 py-2 text-xs font-bold text-pink-light transition-colors hover:bg-pink hover:text-white sm:text-sm"
-                    >
-                      {product.label}を使ってみる →
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
+            <BusinessCard
+              index={index}
+              title={item.title}
+              description={item.description}
+              icon={item.icon}
+              products={item.products}
+            />
           </Reveal>
         ))}
       </div>

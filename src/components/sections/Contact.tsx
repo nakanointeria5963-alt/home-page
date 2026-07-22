@@ -2,6 +2,7 @@ import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
 import MascotBubble from "@/components/MascotBubble";
 import CopyButton from "@/components/CopyButton";
+import ThankYouButton from "@/components/ThankYouButton";
 
 const EMAIL = "nakanointeria5963@gmail.com";
 
@@ -36,6 +37,10 @@ export default function Contact() {
           {EMAIL}
         </a>
         <CopyButton value={EMAIL} />
+      </Reveal>
+
+      <Reveal delay={0.45} className="mt-10 flex justify-center">
+        <ThankYouButton />
       </Reveal>
     </section>
   );
