@@ -72,17 +72,21 @@ export default function BusinessCard({
       <p className="mt-4 text-sm leading-loose text-muted sm:text-base">{description}</p>
       {products && (
         <div className="mt-6 flex flex-wrap gap-3">
-          {products.map((product) => (
-            <a
-              key={product.url}
-              href={product.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-full bg-pink/10 px-4 py-2 text-xs font-bold text-pink-light transition-colors hover:bg-pink hover:text-white sm:text-sm"
-            >
-              {product.label}を使ってみる →
-            </a>
-          ))}
+          {products.map((product) => {
+            const isExternal = product.url.startsWith("http");
+            return (
+              <a
+                key={product.url}
+                href={product.url}
+                {...(isExternal
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+                className="inline-flex items-center gap-1 rounded-full bg-pink/10 px-4 py-2 text-xs font-bold text-pink-light transition-colors hover:bg-pink hover:text-white sm:text-sm"
+              >
+                {product.label} →
+              </a>
+            );
+          })}
         </div>
       )}
     </motion.div>

@@ -22,7 +22,7 @@ const BUSINESSES: Business[] = [
     icon: "📱",
     products: [
       {
-        label: "禁酒サポートアプリ",
+        label: "禁酒サポートアプリを使ってみる",
         url: "https://nakanointeria5963-alt.github.io/kinnsyu/",
       },
     ],
@@ -30,8 +30,14 @@ const BUSINESSES: Business[] = [
   {
     title: "音楽・映像制作",
     description:
-      "自分にしか出せない表現で、心を動かすエンターテインメントを届けます。",
+      "自分にしか出せない表現で、心を動かすエンターテインメントを届けます。AI映像生成を使った短編映画を制作中。",
     icon: "🎵",
+    products: [
+      {
+        label: "映画の制作日誌を読む",
+        url: "/journal",
+      },
+    ],
   },
   {
     title: "アパレル",
