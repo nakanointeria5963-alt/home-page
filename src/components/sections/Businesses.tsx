@@ -40,6 +40,18 @@ const BUSINESSES: Business[] = [
     ],
   },
   {
+    title: "執筆",
+    description:
+      "素直に思ったことを、そのまま残していく場所。映画を作りながら考えたことも、それ以外のことも。",
+    icon: "✒️",
+    products: [
+      {
+        label: "執筆を読む",
+        url: "/writing",
+      },
+    ],
+  },
+  {
     title: "アパレル",
     description:
       "Tシャツなど、想いを乗せたプロダクトを形にして届けます。",
