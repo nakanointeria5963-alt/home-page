@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { href: "/#businesses", label: "事業" },
   { href: "/#vision", label: "世界観" },
   { href: "/journal", label: "制作日誌" },
+  { href: "/writing", label: "執筆" },
   { href: "/#contact", label: "連絡先" },
 ];
 
