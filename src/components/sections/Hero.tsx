@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -46,20 +47,24 @@ export default function Hero() {
         ひとりから始まる、なんでもありのブランド。
       </motion.p>
 
-      <motion.a
-        href="#concept"
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 1 }}
-        className="mt-14 flex flex-col items-center gap-2 text-xs font-medium text-muted"
+        className="mt-14"
       >
-        <span className="tracking-[0.3em]">SCROLL</span>
-        <motion.span
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          className="h-8 w-px bg-gradient-to-b from-pink to-transparent"
-        />
-      </motion.a>
+        <Link
+          href="/#concept"
+          className="flex flex-col items-center gap-2 text-xs font-medium text-muted"
+        >
+          <span className="tracking-[0.3em]">SCROLL</span>
+          <motion.span
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            className="h-8 w-px bg-gradient-to-b from-pink to-transparent"
+          />
+        </Link>
+      </motion.div>
     </section>
   );
 }

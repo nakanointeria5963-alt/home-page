@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
 const NAV_ITEMS = [
   { href: "/#concept", label: "コンセプト" },
@@ -24,7 +25,7 @@ export default function Header() {
       className="fixed inset-x-0 top-0 z-50 border-b border-border/60 bg-background/70 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3 sm:px-10">
-        <a href="/#top" className="flex items-center gap-2">
+        <Link href="/#top" className="flex items-center gap-2">
           <Image
             src="/logo.jpg"
             alt="ROGUE PINK"
@@ -35,25 +36,25 @@ export default function Header() {
           <span className="text-sm font-black tracking-[0.2em] text-foreground">
             ROGUE PINK
           </span>
-        </a>
+        </Link>
         <nav className="hidden gap-8 text-sm font-medium text-muted sm:flex">
           {NAV_ITEMS.map((item) => (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className="transition-colors hover:text-pink-light"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <a
+          <Link
             href="/#contact"
             className="hidden rounded-full bg-pink px-4 py-2 text-xs font-bold tracking-wide text-white shadow-[0_0_20px_rgba(255,46,136,0.45)] transition-transform hover:scale-105 sm:inline-block sm:text-sm"
           >
             連絡する
-          </a>
+          </Link>
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
@@ -86,22 +87,22 @@ export default function Header() {
           >
             <div className="flex flex-col gap-1 px-6 py-4">
               {NAV_ITEMS.map((item) => (
-                <a
+                <Link
                   key={item.href}
                   href={item.href}
                   onClick={() => setMenuOpen(false)}
                   className="rounded-lg px-2 py-3 text-base font-medium text-muted transition-colors hover:bg-background-elevated hover:text-pink-light"
                 >
                   {item.label}
-                </a>
+                </Link>
               ))}
-              <a
+              <Link
                 href="/#contact"
                 onClick={() => setMenuOpen(false)}
                 className="mt-2 rounded-full bg-pink px-4 py-3 text-center text-sm font-bold text-white"
               >
                 連絡する
-              </a>
+              </Link>
             </div>
           </motion.nav>
         )}
