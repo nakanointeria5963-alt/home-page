@@ -9,7 +9,7 @@ import { JOURNAL_ENTRIES } from "./entries";
 export const metadata: Metadata = {
   title: "制作日誌 | ROGUE PINK",
   description:
-    "ROGUE PINKのAI映画プロジェクトの制作日誌。短編映画ができあがっていく過程を公開しています。",
+    "ROGUE PINKのAI映画プロジェクトの制作日誌。映画ができあがっていく過程を公開しています。",
 };
 
 function formatDate(date: string): string {
@@ -25,7 +25,7 @@ export default function JournalPage() {
       <main className="mx-auto max-w-3xl px-6 pb-32 pt-40">
         <SectionHeading eyebrow="JOURNAL" title="制作日誌">
           <p className="mx-auto mt-6 max-w-xl text-center text-sm leading-loose text-muted sm:text-base">
-            AIの映像生成を使った短編映画を、数ヶ月かけて作っています。
+            AIの映像生成を使った映画を、数ヶ月かけて作っています。
             できあがっていく過程を、ここに残していきます。
           </p>
         </SectionHeading>

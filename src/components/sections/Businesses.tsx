@@ -42,7 +42,7 @@ const BUSINESSES: Business[] = [
   {
     title: "映像制作",
     description:
-      "AI映像生成を使った短編映画を制作中。完成した作品だけでなく、作る過程も見せていきます。",
+      "AI映像生成を使った映画を制作中。完成した作品だけでなく、作る過程も見せていきます。",
     icon: "🎬",
     products: [
       {
