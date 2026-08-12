@@ -1,3 +1,21 @@
+# ROGUE PINK — ホームページ
+
+**公開URL: https://home-page-pnpg.vercel.app**
+
+| ページ | パス |
+|---|---|
+| トップ | `/` |
+| 執筆 | `/writing` |
+| 制作日誌 | `/journal` |
+
+- ホスティングは **Vercel**。`main` にプッシュすると自動でデプロイされる
+- 執筆記事の追加は `src/app/writing/entries.ts` の配列の**先頭**に足す。
+  公開前に `npm run build` を通すこと
+- **スマホのホーム画面に入れた場合(PWA)は前の画面が復元されるため、
+  更新が見えないことがある。**確認は通常のブラウザか、URL に `?1` などを付けて開く
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
