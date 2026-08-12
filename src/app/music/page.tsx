@@ -61,6 +61,15 @@ export default function MusicPage() {
                   <p className="mt-6 text-sm leading-loose text-muted sm:text-base">
                     {entry.description}
                   </p>
+                  {entry.videoUrl && (
+                    <video
+                      src={entry.videoUrl}
+                      controls
+                      playsInline
+                      preload="metadata"
+                      className="mt-6 w-full rounded-xl border border-border"
+                    />
+                  )}
                   {entry.links && entry.links.length > 0 && (
                     <div className="mt-6 flex flex-wrap gap-3">
                       {entry.links.map((link) => (
