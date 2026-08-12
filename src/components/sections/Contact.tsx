@@ -4,7 +4,7 @@ import MascotBubble from "@/components/MascotBubble";
 import CopyButton from "@/components/CopyButton";
 import ThankYouButton from "@/components/ThankYouButton";
 
-const EMAIL = "nakanointeria5963@gmail.com";
+const EMAIL = "info@roguepink.com";
 
 export default function Contact() {
   return (
