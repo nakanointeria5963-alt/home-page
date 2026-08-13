@@ -35,9 +35,10 @@
 | 要素 | 内容 | 指定 |
 | --- | --- | --- |
 | ワードマーク | `logo-wordmark.png` | 幅 25mm |
+| 肩書き | 未確定(`Founder` / `Producer` / `Founder & Producer` / `Chief Rogue` を比較中) | 約 2.1mm・字間 0.3em・大文字・`#FF2E88` |
 | 名前 | `NOBU` | 約 7mm・太字・字間 0.14em・白 |
 | 罫 | ピンクの短い線 | 11 × 0.45mm・`#FF2E88` |
-| 本名 | `中野 信宏` | 約 2.5mm・字間 0.22em・`#A7A6B8` |
+| 本名 | `中野 修敬` | 約 2.5mm・字間 0.22em・`#A7A6B8` |
 | 一行 | `ありがとうと言ってもらいたい。` / `そして、言いたい。` | 約 2.3mm・行間 1.75・`#FF8FC4` |
 | URL | `roguepink.com` | 約 3mm・太字・白 |
 | メール | `info@roguepink.com` | 約 2.4mm・`#A7A6B8` |
