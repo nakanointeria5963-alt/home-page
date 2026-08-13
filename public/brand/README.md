@@ -33,7 +33,14 @@
 
 ## 名刺
 
-`card-mockup.png` は表・裏のデザイン案。仕様は `../../docs/business-card.md` を参照。
+肩書きは **Producer** で確定。仕様は `../../docs/business-card.md` を参照。
+
+| ファイル | 中身 |
+| --- | --- |
+| `card-front-print.png` | 入稿データ・表。97 × 61mm(塗り足し3mm込み)・350dpi |
+| `card-back-print.png` | 入稿データ・裏。同上 |
+| `card-front.png` / `card-back.png` | 画面で見る用のプレビュー(仕上がりサイズ・角丸つき) |
+| `card-title-options.png` | 肩書きを決めたときの比較。記録として残してある |
 
 ## ブランドカラー
 

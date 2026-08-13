@@ -1,7 +1,14 @@
 # 名刺仕様 — ROGUE PINK
 
-印刷所やCanvaにそのまま渡せるように、決まったことをまとめたもの。
-デザイン案の画像は `public/brand/card-mockup.png`。
+印刷所にそのまま渡せるように、決まったことをまとめたもの。
+
+入稿データは生成済み:
+
+- 表 `public/brand/card-front-print.png`
+- 裏 `public/brand/card-back-print.png`
+
+どちらも 97 × 61mm(塗り足し3mm込み)・350dpi・1337 × 841px。
+画面で見る用のプレビューは `card-front.png` / `card-back.png`。
 
 ## 考え方
 
@@ -35,7 +42,7 @@
 | 要素 | 内容 | 指定 |
 | --- | --- | --- |
 | ワードマーク | `logo-wordmark.png` | 幅 25mm |
-| 肩書き | 未確定(`Founder` / `Producer` / `Founder & Producer` / `Chief Rogue` を比較中) | 約 2.1mm・字間 0.3em・大文字・`#FF2E88` |
+| 肩書き | `Producer` | 約 2.15mm・字間 0.34em・大文字・`#FF2E88` |
 | 名前 | `NOBU` | 約 7mm・太字・字間 0.14em・白 |
 | 罫 | ピンクの短い線 | 11 × 0.45mm・`#FF2E88` |
 | 本名 | `中野 修敬` | 約 2.5mm・字間 0.22em・`#A7A6B8` |
@@ -50,9 +57,8 @@
 
 ## 書体
 
-モックアップは環境にあった代替書体で組んである。実物はロゴに合わせて
-**幾何学的なサンセリフ**(Montserrat / Poppins / Futura系)を使う。
-和文は Noto Sans JP。
+サイトと同じ **Noto Sans JP**(400 / 500 / 700)で組んである。
+入稿データは書体をアウトライン化する必要のないPNGなので、そのまま渡せる。
 
 ## 印刷・加工
 
