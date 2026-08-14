@@ -1,12 +1,30 @@
 # ROGUE PINK — ホームページ
 
-**公開URL: https://home-page-pnpg.vercel.app**
+**公開URL: https://roguepink.com**
 
 | ページ | パス |
 |---|---|
 | トップ | `/` |
 | 執筆 | `/writing` |
+| 音楽 | `/music` |
 | 制作日誌 | `/journal` |
+| ブランド素材 | `/brand/`(README・ロゴ・名刺の入稿データ) |
+
+### URL について
+
+同じサイトに複数の入口がある。実体はVercelのプロジェクト1つで、
+どの入口から入っても中身は同じ。
+
+| URL | 状態 |
+|---|---|
+| `roguepink.com` | **これを人に伝える。** `www.roguepink.com` へ転送される |
+| `www.roguepink.com` | 独自ドメインの本体 |
+| `home-page-pnpg.vercel.app` | Vercelが自動で付けた住所。生きている。予備として残す |
+| `home-page-hazel-beta.vercel.app` | **死んでいる。** 重複していたプロジェクトを削除したため |
+
+独自ドメインを足しても `.vercel.app` の住所は消えない。
+逆に、Vercelのプロジェクトを消すとその `.vercel.app` は死ぬ。
+独自ドメインのほうは、契約が続く限り別の場所へ付け替えられる。
 
 - ホスティングは **Vercel**。`main` にプッシュすると自動でデプロイされる
 - 執筆記事の追加は `src/app/writing/entries.ts` の配列の**先頭**に足す。
