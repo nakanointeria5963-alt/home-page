@@ -71,8 +71,8 @@ def build(plate):
     page.draw_rect(page.rect, color=None, fill=(PAPER,)*3)
 
     fonts = {}
-    for _, _, _, _, _, wt, _ in TEXT:
-        if wt not in fonts:
+    for pl, _, _, _, _, wt, _ in TEXT:
+        if pl == plate and wt not in fonts:
             f = FONTS / f"NotoSansJP-{wt}.ttf"
             page.insert_font(fontname=f"n{wt}", fontfile=str(f))
             fonts[wt] = pymupdf.Font(fontfile=str(f))
@@ -163,6 +163,7 @@ if __name__ == "__main__":
     for plate in ("white", "pink"):
         d = build(plate)
         path = out / f"card-back-{plate}.pdf"
+        d.subset_fonts()          # 実際に使った文字だけ残す
         d.save(str(path), garbage=4, deflate=True)
         print(f"{path.name}: {d[0].rect.width/MM:.1f} × {d[0].rect.height/MM:.1f}mm")
         d.close()
