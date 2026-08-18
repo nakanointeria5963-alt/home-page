@@ -136,11 +136,29 @@ def preview(dpi=600):
         return Image.fromarray(a)
     back, front = compose((w, WHITE), (k, PINK)), compose((f, FOIL))
     back.save(out / "card-back.png"); front.save(out / "card-front.png")
-    # 表裏を並べた1枚(印刷所に見せる用)
-    gap = int(6 / 91 * wd)
-    pair = Image.new("RGB", (wd, h*2 + gap), (250, 247, 249))
-    pair.paste(front, (0, 0)); pair.paste(back, (0, h + gap))
-    pair.save(out / "card-option-black-paper.png")
+
+    # 表裏を並べた1枚。どちらが何のインクかを書いておく(印刷所に見せる用)
+    from PIL import ImageDraw, ImageFont
+    def font(px):
+        try: return ImageFont.truetype(str(FONTS / "NotoSansJP-700.ttf"), px)
+        except Exception: return ImageFont.load_default(px)
+    def font_r(px):
+        try: return ImageFont.truetype(str(FONTS / "NotoSansJP-400.ttf"), px)
+        except Exception: return ImageFont.load_default(px)
+    pad = int(wd * 0.045)
+    lbl = int(wd * 0.075)
+    BG, INK2, SUB = (250, 247, 249), (26, 22, 32), (120, 110, 128)
+    sheet = Image.new("RGB", (wd + pad*2, pad + (h + lbl + pad)*2), BG)
+    dr = ImageDraw.Draw(sheet)
+    fb, fs = font(int(wd*0.030)), font_r(int(wd*0.021))
+    rows = ((front, "表", "ディープマット ブラック + メタリックピンク箔"),
+            (back,  "裏", "ホワイト印刷 + ネオンピンク(スペシャルトナー2色)"))
+    for i, (img, t, note) in enumerate(rows):
+        y = pad + i * (h + lbl + pad)
+        dr.text((pad, y), t, font=fb, fill=INK2)
+        dr.text((pad + int(wd*0.055), y + int(wd*0.009)), note, font=fs, fill=SUB)
+        sheet.paste(img, (pad, y + lbl))
+    sheet.save(out / "card-option-black-paper.png")
     print("プレビュー3枚を作り直した(card-front / card-back / card-option-black-paper)")
 
 def build_foil():
