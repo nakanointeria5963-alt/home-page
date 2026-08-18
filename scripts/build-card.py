@@ -118,6 +118,31 @@ def build(plate):
 def _png(pil):
     b = io.BytesIO(); pil.save(b, format="PNG"); return b.getvalue()
 
+def preview(dpi=600):
+    """刷り上がりの見た目を作る。入稿データと同じ元から作るので、絵と実物がズレない"""
+    import numpy as np
+    def ink(path):
+        x = pymupdf.open(path)[0].get_pixmap(dpi=dpi)
+        return np.array(Image.frombytes("RGB", (x.width, x.height), x.samples).convert("L")) < 128
+    out = ROOT / "public" / "brand"
+    w = ink(out / "card-back-white.pdf")
+    k = ink(out / "card-back-pink.pdf")
+    f = ink(out / "card-front-foil-plate.pdf")
+    h, wd = w.shape
+    PAPER, WHITE, PINK, FOIL = (26,24,31), (255,255,255), (255,45,135), (255,86,158)
+    def compose(*layers):
+        a = np.zeros((h, wd, 3), np.uint8); a[:, :] = PAPER
+        for m, c in layers: a[m] = c
+        return Image.fromarray(a)
+    back, front = compose((w, WHITE), (k, PINK)), compose((f, FOIL))
+    back.save(out / "card-back.png"); front.save(out / "card-front.png")
+    # 表裏を並べた1枚(印刷所に見せる用)
+    gap = int(6 / 91 * wd)
+    pair = Image.new("RGB", (wd, h*2 + gap), (250, 247, 249))
+    pair.paste(front, (0, 0)); pair.paste(back, (0, h + gap))
+    pair.save(out / "card-option-black-paper.png")
+    print("プレビュー3枚を作り直した(card-front / card-back / card-option-black-paper)")
+
 def build_foil():
     """表の箔版。ロゴの形だけを黒1色で置く(箔は濃淡を表現できないため)"""
     doc = pymupdf.open()
@@ -141,3 +166,4 @@ if __name__ == "__main__":
         d.save(str(path), garbage=4, deflate=True)
         print(f"{path.name}: {d[0].rect.width/MM:.1f} × {d[0].rect.height/MM:.1f}mm")
         d.close()
+    preview()
