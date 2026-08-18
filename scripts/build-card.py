@@ -40,7 +40,9 @@ TEXT = [
 WORDMARK = dict(plate="pink", src="logo-wordmark.png", x=7.05, y=7.05, w=24.87, h=2.65)
 RULE     = dict(plate="pink", x=7.05, y=23.99, w=10.85, h=0.53)
 PLATE    = dict(x=62.88, y=17.11, w=21.17, h=20.90, r=1.20)   # QRの白い下地
-QR       = dict(size=17.0, src="qr-roguepink.png")
+# QRは「コード本体」の大きさで指定する。まわりに必要な余白(4マス)は
+# 白いプレートがそのまま兼ねるので、本体を余白ぶん縮める必要はない
+QR       = dict(symbol=15.8, src="qr-roguepink.png")
 # 表・箔押しの版。ロゴは仕上がりの中央に置く
 FOIL     = dict(src="logo-transparent.png", x=27.43, y=11.29, w=35.98, h=32.54)
 
@@ -100,9 +102,11 @@ def build(plate):
                        radius=p["r"]/min(p["w"], p["h"]), color=None, fill=(INK,)*3)
         # QRは白インクのベタ地に、紙の黒を抜いて作る ―― 黒いマスをインク無しにする
         grid, n = qr_matrix(BRAND / QR["src"])
-        cell = QR["size"] / (n + 8)                       # 余白4マスぶんを含めた1マス
-        x0 = p["x"] + (p["w"] - QR["size"]) / 2 + cell * 4
-        y0 = p["y"] + (p["h"] - QR["size"]) / 2 + cell * 4
+        cell = QR["symbol"] / n
+        x0 = p["x"] + (p["w"] - QR["symbol"]) / 2
+        y0 = p["y"] + (p["h"] - QR["symbol"]) / 2
+        quiet = min(p["w"] - QR["symbol"], p["h"] - QR["symbol"]) / 2 / cell
+        assert quiet >= 4, f"QRのまわりの余白が{quiet:.1f}マスしかない(4マス必要)"
         for r_i, row in enumerate(grid):
             for c_i, on in enumerate(row):
                 if not on: continue
