@@ -360,17 +360,19 @@ check("メールアドレスのつづり", "info@roguepink.com" in have)
 check("URLのつづり", "roguepink.com" in have)
 
 # ---------------------------------------------------------------- 8. フォント
-section("8. フォント")
-for f in ("card-back-pink.pdf", "card-back-white.pdf"):
+section("8. 文字")
+# 入稿データは印刷の型紙。文字はアウトライン化して図形で渡す。
+# フォントを埋め込む形だと、印刷所側の環境しだいで別の書体に置き換わる余地が残る。
+for f, label in PLATES.items():
     d = pymupdf.open(BRAND / f)
-    fonts = d[0].get_fonts()
-    emb = all(x[3] for x in fonts) if fonts else True
-    names = ", ".join(sorted({x[3] or x[4] for x in fonts}))
+    page = d[0]
+    fonts = page.get_fonts()
+    live = page.get_text("text").strip()
     d.close()
-    check(f"{f}: フォントが埋め込まれている", emb and bool(fonts), names)
-d = pymupdf.open(BRAND / "card-front-foil-plate.pdf")
-check("箔版に文字が入っていない(図形のみ)", not d[0].get_fonts())
-d.close()
+    check(f"{label}: フォントが入っていない", not fonts,
+          ", ".join(sorted({x[3] or x[4] for x in fonts})) if fonts else "アウトライン化済み")
+    check(f"{label}: 文字として残っていない", not live,
+          live.replace("\n", " / ") if live else "図形のみ")
 
 # ---------------------------------------------------------------- 9. 容量
 section("9. ファイル")
