@@ -25,6 +25,17 @@ INK, PAPER = 0, 1                   # 黒=インクが乗る / 白=乗らない
 
 def mm(v): return v * MM
 
+# 裏面のピンクを「メタリックピンク箔」で押すか、「ネオンピンクのトナー」で刷るか。
+#
+# 箔は転写するかしないかの二択で、トナーのように薄く乗ることができない。
+# LEDA の下限 0.2mm を全文字で満たす必要があるため、タグラインだけ設定が変わる。
+#   トナー: 級数 2.55 / ウェイト 600 → 句点 0.165mm・濁点 0.185mm(下限未満だが薄く出る)
+#   箔:     級数 2.85 / ウェイト 700 → 句点 0.203mm・濁点 0.231mm(全文字が下限以上)
+FOIL_BACK = True
+
+_TAG = (2.85, 700) if FOIL_BACK else (2.55, 600)
+_TAG_Y = (33.95, 38.45) if FOIL_BACK else (34.04, 38.30)
+
 # --- 版ごとの中身。位置は仕上がり 91×55mm の左上から測った mm ---
 # LEDA の推奨(線は 0.2mm 以上)に合わせて、細かった日本語は太さと級数を上げてある
 TEXT = [
@@ -32,19 +43,20 @@ TEXT = [
     ("pink",  "PRODUCER",           7.0, 13.67, 2.15, 700, 0.34),
     ("white", "NOBU",               7.0, 21.34, 6.80, 700, 0.14),
     ("white", "中野 修敬",            7.0, 28.22, 2.60, 600, 0.22),
-    ("pink",  "はじまりは、",          7.0, 34.04, 2.55, 600, 0.02),
-    ("pink",  "「ありがとう」でした。",    7.0, 38.30, 2.55, 600, 0.02),
+    ("pink",  "はじまりは、",          7.0, _TAG_Y[0], _TAG[0], _TAG[1], 0.02),
+    ("pink",  "「ありがとう」でした。",    7.0, _TAG_Y[1], _TAG[0], _TAG[1], 0.02),
     ("white", "roguepink.com",      7.0, 44.10, 2.95, 700, 0.0),
-    ("white", "info@roguepink.com", 7.0, 47.54, 2.35, 500, 0.0),
+    ("white", "info@roguepink.com", 7.0, 47.60, 2.45, 600, 0.0),
 ]
-WORDMARK = dict(plate="pink", src="logo-wordmark.png", x=7.05, y=7.05, w=24.87, h=2.65)
+# 裏のワードマークも箔になったので、表と同じ輪郭データを使う(scripts/trace-logo.py)
+WORDMARK = dict(plate="pink", src="logo-wordmark-foil.pdf", x=7.05, y=7.05, w=24.87, h=2.65)
 RULE     = dict(plate="pink", x=7.05, y=23.99, w=10.85, h=0.53)
 PLATE    = dict(x=62.88, y=17.11, w=21.17, h=20.90, r=1.20)   # QRの白い下地
 # QRは「コード本体」の大きさで指定する。まわりに必要な余白(4マス)は
 # 白いプレートがそのまま兼ねるので、本体を余白ぶん縮める必要はない
 QR       = dict(symbol=15.8, src="qr-roguepink.png")
 # 表・箔押しの版。ロゴは仕上がりの中央に置く
-FOIL     = dict(src="logo-transparent.png", x=27.43, y=11.29, w=35.98, h=32.54)
+FOIL     = dict(src="logo-foil.pdf", x=27.43, y=11.29, w=35.98, h=32.54)
 
 def qr_matrix(png):
     """QRのPNGから、25×25のマス目を読み取る(余白4マスは除く)"""
@@ -87,9 +99,10 @@ def build(plate):
 
     if plate == "pink":
         w = WORDMARK
-        page.insert_image(pymupdf.Rect(mm(w["x"]), mm(w["y"]),
-                                       mm(w["x"]+w["w"]), mm(w["y"]+w["h"])),
-                          pixmap=pymupdf.Pixmap(_png(flatten(BRAND / w["src"]))))
+        mark = pymupdf.open(BRAND / w["src"])
+        page.show_pdf_page(pymupdf.Rect(mm(w["x"]), mm(w["y"]),
+                                        mm(w["x"]+w["w"]), mm(w["y"]+w["h"])), mark, 0)
+        mark.close()
         r = RULE
         page.draw_rect(pymupdf.Rect(mm(r["x"]), mm(r["y"]),
                                     mm(r["x"]+r["w"]), mm(r["y"]+r["h"])),
@@ -134,7 +147,8 @@ def preview(dpi=600):
         a = np.zeros((h, wd, 3), np.uint8); a[:, :] = PAPER
         for m, c in layers: a[m] = c
         return Image.fromarray(a)
-    back, front = compose((w, WHITE), (k, PINK)), compose((f, FOIL))
+    # 裏のピンクを箔にする決定なら、裏も表と同じ光り方で描く
+    back, front = compose((w, WHITE), (k, FOIL if FOIL_BACK else PINK)), compose((f, FOIL))
     back.save(out / "card-back.png"); front.save(out / "card-front.png")
 
     # 表裏を並べた1枚。どちらが何のインクかを書いておく(印刷所に見せる用)
@@ -151,8 +165,10 @@ def preview(dpi=600):
     sheet = Image.new("RGB", (wd + pad*2, pad + (h + lbl + pad)*2), BG)
     dr = ImageDraw.Draw(sheet)
     fb, fs = font(int(wd*0.030)), font_r(int(wd*0.021))
-    rows = ((front, "表", "ディープマット ブラック + メタリックピンク箔"),
-            (back,  "裏", "ホワイト印刷 + ネオンピンク(スペシャルトナー2色)"))
+    back_note = ("ホワイト印刷 + メタリックピンク箔(箔2版目)" if FOIL_BACK
+                 else "ホワイト印刷 + ネオンピンク(スペシャルトナー2色)")
+    rows = ((front, "表", "ディープマット ブラック + メタリックピンク箔(箔1版目)"),
+            (back,  "裏", back_note))
     for i, (img, t, note) in enumerate(rows):
         y = pad + i * (h + lbl + pad)
         dr.text((pad, y), t, font=fb, fill=INK2)
@@ -162,14 +178,23 @@ def preview(dpi=600):
     print("プレビュー3枚を作り直した(card-front / card-back / card-option-black-paper)")
 
 def build_foil():
-    """表の箔版。ロゴの形だけを黒1色で置く(箔は濃淡を表現できないため)"""
+    """表の箔版。ロゴの形だけを黒1色で置く(箔は濃淡を表現できないため)
+
+    中身は scripts/trace-logo.py が作った輪郭データ(logo-foil.pdf)。
+    もとの PNG をそのまま貼ると縁に半透明の画素が残り、LEDA から
+    「文字の下部(R)が若干擦れている」と指摘された。輪郭に置き換えて解消してある。
+    """
+    src = BRAND / FOIL["src"]
+    if not src.exists():
+        sys.exit(f"{src.name} が無い。先に scripts/trace-logo.py を実行する")
     doc = pymupdf.open()
     page = doc.new_page(width=W, height=H)
     page.draw_rect(page.rect, color=None, fill=(PAPER,)*3)
     f = FOIL
-    page.insert_image(pymupdf.Rect(mm(f["x"]), mm(f["y"]),
-                                   mm(f["x"]+f["w"]), mm(f["y"]+f["h"])),
-                      pixmap=pymupdf.Pixmap(_png(flatten(BRAND / f["src"]))))
+    logo = pymupdf.open(src)
+    page.show_pdf_page(pymupdf.Rect(mm(f["x"]), mm(f["y"]),
+                                    mm(f["x"]+f["w"]), mm(f["y"]+f["h"])), logo, 0)
+    logo.close()
     return doc
 
 if __name__ == "__main__":
