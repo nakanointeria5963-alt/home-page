@@ -51,7 +51,9 @@ TEXT = [
     ("white", "info@roguepink.com", 7.0, 47.60, 2.45, 600, 0.0),
 ]
 # 裏のワードマークも箔になったので、表と同じ輪郭データを使う(scripts/trace-logo.py)
-WORDMARK = dict(plate="pink", src="logo-wordmark-foil.pdf", x=7.05, y=7.05, w=24.87, h=2.65)
+# 高さは Montserrat Bold の字面から決まる。以前は画像を 2.65mm の枠に押し込んでいて、
+# 横に 4.7% 伸びていた。文字で組み直したので、いまは書体そのままの比率
+WORDMARK = dict(plate="pink", src="logo-wordmark-foil.pdf", x=7.05, y=7.05, w=24.87, h=2.7138)
 RULE     = dict(plate="pink", x=7.05, y=23.99, w=10.85, h=0.53)
 PLATE    = dict(x=62.88, y=17.11, w=21.17, h=20.90, r=1.20)   # QRの白い下地
 # QRは「コード本体」の大きさで指定する。まわりに必要な余白(4マス)は

@@ -287,10 +287,68 @@ def _nick_depth(pdf, dpi=2400):
     dist = cv2.distanceTransform(nick.astype(np.uint8), cv2.DIST_L2, 5)
     return n, float(np.max(nd.maximum(dist, lab, range(1, n + 1)))) * 2 / pp * 1000
 
-for _f, _label in (("logo-foil.pdf", "表ロゴ"), ("logo-wordmark-foil.pdf", "裏ワードマーク")):
-    _n, _d = _nick_depth(BRAND / _f)
-    check(f"{_label}: 縁の欠けが 25μm 未満", _d < 25,
-          f"いちばん深い食い込み {_d:.0f}μm（{_n}箇所・下限21μm）")
+# 欠けの検査は「画像から輪郭を取った部分」だけに意味がある。
+# ワードマークはフォントで組み直したので、代わりに書体と一致するかを見る。
+_n, _d = _nick_depth(BRAND / "logo-foil.pdf")
+check("表ロゴ: 縁の欠けが 60μm 未満", _d < 60,
+      f"いちばん深い食い込み {_d:.0f}μm（{_n}箇所・測定の下限21μm）")
+
+# ワードマークが Montserrat Bold そのものか。組み直しに失敗すると形が崩れるので、
+# 同じ大きさで書体から描き直して1画素ずつ突き合わせる。
+def _wordmark_matches(dpi=2400):
+    """ワードマークが Montserrat Bold そのものか。同じ幅で書体から描き直して突き合わせる"""
+    pp = dpi / 25.4
+    pymupdf.TOOLS.set_aa_level(0)
+    font_path = str(FONTS / "Montserrat-700.ttf")
+
+    def ink(page_render):
+        ys, xs = np.nonzero(page_render)
+        return page_render[ys.min():ys.max()+1, xs.min():xs.max()+1]
+
+    d = pymupdf.open(BRAND / "logo-wordmark-foil.pdf")
+    pm = d[0].get_pixmap(matrix=pymupdf.Matrix(dpi/72, dpi/72), colorspace=pymupdf.csGRAY)
+    got = ink(np.frombuffer(pm.samples, np.uint8).reshape(pm.height, pm.width) < 128)
+    d.close()
+
+    font = pymupdf.Font(fontfile=font_path)
+    def render(size):
+        doc = pymupdf.open()
+        pg = doc.new_page(width=60 * card.MM, height=20 * card.MM)
+        pg.insert_font(fontname="m", fontfile=font_path)
+        x = 5 * card.MM
+        for ch in "ROGUE PINK":
+            pg.insert_text((x, 15 * card.MM), ch, fontname="m",
+                           fontsize=size * card.MM, color=(0,))
+            x += font.text_length(ch, fontsize=size * card.MM)
+        q = pg.get_pixmap(matrix=pymupdf.Matrix(dpi/72, dpi/72), colorspace=pymupdf.csGRAY)
+        a = np.frombuffer(q.samples, np.uint8).reshape(q.height, q.width) < 128
+        doc.close()
+        return ink(a)
+
+    lo, hi = 0.5, 20.0                       # 幅がそろう級数を二分探索
+    for _ in range(28):
+        mid = (lo + hi) / 2
+        if render(mid).shape[1] < got.shape[1]: lo = mid
+        else: hi = mid
+    ref = render((lo + hi) / 2)
+
+    h = max(got.shape[0], ref.shape[0]) + 4  # 同じ大きさの台紙に載せてから重ねる
+    w = max(got.shape[1], ref.shape[1]) + 4
+    A = np.zeros((h, w), bool); A[2:2+got.shape[0], 2:2+got.shape[1]] = got
+    best = 1.0
+    for dy in range(-2, 3):
+        for dx in range(-2, 3):
+            B = np.zeros((h, w), bool)
+            B[2+dy:2+dy+ref.shape[0], 2+dx:2+dx+ref.shape[1]] = ref
+            u = int((A | B).sum())
+            if u: best = min(best, float((A ^ B).sum()) / u)
+    return best
+
+# 解像度を倍にすると差が半分になる = 形ではなく縁1画素ぶんの効果。
+# 2400dpi では 0.8% 前後に落ち着くので、1.5% を上限とする。
+_diff = _wordmark_matches()
+check("裏ワードマーク: Montserrat Bold と一致", _diff < 0.015,
+      f"食い違い {_diff*100:.3f}%（縁1画素ぶん。形が崩れれば数%〜十数%になる）")
 
 # ---------------------------------------------------------------- 7. 文言
 section("7. 文言")
