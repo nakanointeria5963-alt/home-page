@@ -15,6 +15,9 @@ from pathlib import Path
 import pymupdf
 from PIL import Image
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from outline import draw_text
+
 ROOT = Path(__file__).resolve().parent.parent
 BRAND = ROOT / "public" / "brand"
 FONTS = Path(sys.argv[1] if len(sys.argv) > 1 else "fonts")
@@ -86,20 +89,16 @@ def build(plate):
     page = doc.new_page(width=W, height=H)
     page.draw_rect(page.rect, color=None, fill=(PAPER,))
 
-    fonts = {}
-    for pl, _, _, _, _, wt, _ in TEXT:
-        if pl == plate and wt not in fonts:
-            f = FONTS / f"NotoSansJP-{wt}.ttf"
-            page.insert_font(fontname=f"n{wt}", fontfile=str(f))
-            fonts[wt] = pymupdf.Font(fontfile=str(f))
-
+    # 文字は「文字」ではなく「図形」として置く。入稿データは印刷の型紙なので、
+    # フォントを埋め込むより、形そのものを渡すほうが確実(scripts/outline.py)
+    shape = page.new_shape()
     for pl, txt, x, y, size, wt, sp in TEXT:
         if pl != plate: continue
-        cx = mm(x)
-        for ch in txt:
-            page.insert_text((cx, mm(y)), ch, fontname=f"n{wt}",
-                             fontsize=mm(size), color=(INK,))
-            cx += fonts[wt].text_length(ch, fontsize=mm(size)) + mm(size) * sp
+        draw_text(shape, str(FONTS / f"NotoSansJP-{wt}.ttf"), txt,
+                  mm(x), mm(y), mm(size), sp)
+    # フォントの輪郭は「非ゼロ」で塗る。奇偶にすると接合部が抜け落ちる
+    shape.finish(color=None, fill=(INK,), even_odd=False, closePath=True)
+    shape.commit()
 
     if plate == "pink":
         w = WORDMARK
