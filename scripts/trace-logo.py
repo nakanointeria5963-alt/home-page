@@ -88,7 +88,7 @@ def write(job, path, w, h):
                 shape.draw_bezier(here, P(seg.c1), P(seg.c2), P(seg.end_point))
             here = P(seg.end_point)
     # 奇偶ルール = 形の中にある輪郭は「穴」として抜ける
-    shape.finish(color=None, fill=(0, 0, 0), even_odd=True, closePath=True)
+    shape.finish(color=None, fill=(0,), even_odd=True, closePath=True)
     shape.commit()
     doc.save(str(BRAND / job["out"]), garbage=4, deflate=True)
     doc.close()
