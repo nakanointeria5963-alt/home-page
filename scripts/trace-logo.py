@@ -33,6 +33,14 @@ JOBS = [
 UP = 4                        # 引き伸ばしてから輪郭を取ると階段状のギザギザが減る
 MM = 72 / 25.4
 
+# 元画像は文字やマークの「下の縁」が欠けている。LEDA から2度、
+# 「擦れている」「へこんで見える」と指摘された箇所がこれ。
+# まわりがインクに囲まれた背景画素だけを埋めて、欠けを塞ぐ。
+# 窓を小さく・しきい値を高くしてあるので、文字どうしの隙間や
+# ふところ(O や G の内側)には届かない。
+NICK_WIN  = 0.10              # 見まわす範囲(mm)
+NICK_FILL = 0.62              # まわりのインク率がこれ以上なら「欠け」とみなす
+
 
 def cleaned(job):
     """半透明を切り捨てて白黒にし、ゴミと穴を取り除く"""
@@ -52,10 +60,19 @@ def cleaned(job):
              if s < limit and i + 1 != background]
     filled = keep | np.isin(lab2, holes)
 
-    changed = int((filled ^ solid).sum())
+    # 縁の欠けを塞ぐ
+    pxmm = w / job["w"]
+    win = int(round(NICK_WIN * pxmm)) | 1
+    frac = nd.uniform_filter(filled.astype(np.float32), size=win)
+    nick = (~filled) & (frac >= NICK_FILL)
+    n_nick = nd.label(nick)[1]
+    repaired = filled | nick
+
+    changed = int((repaired ^ solid).sum())
     print(f"  掃除: 消した粒と埋めた穴 {n - int(keep.any()) + len(holes)}個 "
+          f"/ 塞いだ縁の欠け {n_nick}個({nick.sum()/pxmm**2:.4f}mm²) "
           f"/ 動いた画素 {changed}")
-    return filled, w, h
+    return repaired, w, h
 
 
 def outline(job, mask, w, h):

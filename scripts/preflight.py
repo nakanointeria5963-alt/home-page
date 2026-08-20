@@ -11,6 +11,7 @@ from pathlib import Path
 import numpy as np
 import cv2
 import pymupdf
+import scipy.ndimage as nd
 from PIL import Image
 
 ROOT  = Path(__file__).resolve().parent.parent
@@ -265,6 +266,31 @@ for _f, _label in (("logo-foil.pdf", "表ロゴの輪郭"),
     _v = _wobble(BRAND / _f)
     check(f"{_label}: うねりが 50μm 未満", np.percentile(_v, 90) < 50,
           f"平均 {_v.mean():.1f}μm / 上位10% {np.percentile(_v,90):.1f}μm")
+
+# 縁の「欠け」—— LEDA が2度指摘した、文字やマークの縁が食い込んでいる箇所。
+# まわりがインクに囲まれた背景画素を探す。0.2mm(箔の下限)より小さい食い込みは
+# 印刷では再現されないが、データとしては残しておきたくない。
+# 面積ではなく「食い込みの深さ」で見る。2400dpi では 21μm(2画素)が測定の下限なので、
+# それを少し超える 25μm を上限とする。箔押しの下限 0.2mm の 1/8。
+def _nick_depth(pdf, dpi=2400):
+    pp = dpi / 25.4
+    pymupdf.TOOLS.set_aa_level(0)
+    d = pymupdf.open(pdf)
+    pm = d[0].get_pixmap(matrix=pymupdf.Matrix(dpi/72, dpi/72), colorspace=pymupdf.csGRAY)
+    arr = np.frombuffer(pm.samples, np.uint8).reshape(pm.height, pm.width).copy()
+    d.close()
+    m = arr < 128
+    win = int(round(0.10 * pp)) | 1
+    nick = (~m) & (cv2.blur(m.astype(np.float32), (win, win)) >= 0.62)
+    lab, n = nd.label(nick)
+    if n == 0: return 0, 0.0
+    dist = cv2.distanceTransform(nick.astype(np.uint8), cv2.DIST_L2, 5)
+    return n, float(np.max(nd.maximum(dist, lab, range(1, n + 1)))) * 2 / pp * 1000
+
+for _f, _label in (("logo-foil.pdf", "表ロゴ"), ("logo-wordmark-foil.pdf", "裏ワードマーク")):
+    _n, _d = _nick_depth(BRAND / _f)
+    check(f"{_label}: 縁の欠けが 25μm 未満", _d < 25,
+          f"いちばん深い食い込み {_d:.0f}μm（{_n}箇所・下限21μm）")
 
 # ---------------------------------------------------------------- 7. 文言
 section("7. 文言")
