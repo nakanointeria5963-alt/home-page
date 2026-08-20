@@ -25,6 +25,17 @@ INK, PAPER = 0, 1                   # 黒=インクが乗る / 白=乗らない
 
 def mm(v): return v * MM
 
+# 裏面のピンクを「メタリックピンク箔」で押すか、「ネオンピンクのトナー」で刷るか。
+#
+# 箔は転写するかしないかの二択で、トナーのように薄く乗ることができない。
+# LEDA の下限 0.2mm を全文字で満たす必要があるため、タグラインだけ設定が変わる。
+#   トナー: 級数 2.55 / ウェイト 600 → 句点 0.165mm・濁点 0.185mm(下限未満だが薄く出る)
+#   箔:     級数 2.85 / ウェイト 700 → 句点 0.203mm・濁点 0.231mm(全文字が下限以上)
+FOIL_BACK = True
+
+_TAG = (2.85, 700) if FOIL_BACK else (2.55, 600)
+_TAG_Y = (33.95, 38.45) if FOIL_BACK else (34.04, 38.30)
+
 # --- 版ごとの中身。位置は仕上がり 91×55mm の左上から測った mm ---
 # LEDA の推奨(線は 0.2mm 以上)に合わせて、細かった日本語は太さと級数を上げてある
 TEXT = [
@@ -32,8 +43,8 @@ TEXT = [
     ("pink",  "PRODUCER",           7.0, 13.67, 2.15, 700, 0.34),
     ("white", "NOBU",               7.0, 21.34, 6.80, 700, 0.14),
     ("white", "中野 修敬",            7.0, 28.22, 2.60, 600, 0.22),
-    ("pink",  "はじまりは、",          7.0, 34.04, 2.55, 600, 0.02),
-    ("pink",  "「ありがとう」でした。",    7.0, 38.30, 2.55, 600, 0.02),
+    ("pink",  "はじまりは、",          7.0, _TAG_Y[0], _TAG[0], _TAG[1], 0.02),
+    ("pink",  "「ありがとう」でした。",    7.0, _TAG_Y[1], _TAG[0], _TAG[1], 0.02),
     ("white", "roguepink.com",      7.0, 44.10, 2.95, 700, 0.0),
     ("white", "info@roguepink.com", 7.0, 47.54, 2.35, 500, 0.0),
 ]
@@ -134,7 +145,8 @@ def preview(dpi=600):
         a = np.zeros((h, wd, 3), np.uint8); a[:, :] = PAPER
         for m, c in layers: a[m] = c
         return Image.fromarray(a)
-    back, front = compose((w, WHITE), (k, PINK)), compose((f, FOIL))
+    # 裏のピンクを箔にする決定なら、裏も表と同じ光り方で描く
+    back, front = compose((w, WHITE), (k, FOIL if FOIL_BACK else PINK)), compose((f, FOIL))
     back.save(out / "card-back.png"); front.save(out / "card-front.png")
 
     # 表裏を並べた1枚。どちらが何のインクかを書いておく(印刷所に見せる用)
@@ -151,8 +163,10 @@ def preview(dpi=600):
     sheet = Image.new("RGB", (wd + pad*2, pad + (h + lbl + pad)*2), BG)
     dr = ImageDraw.Draw(sheet)
     fb, fs = font(int(wd*0.030)), font_r(int(wd*0.021))
-    rows = ((front, "表", "ディープマット ブラック + メタリックピンク箔"),
-            (back,  "裏", "ホワイト印刷 + ネオンピンク(スペシャルトナー2色)"))
+    back_note = ("ホワイト印刷 + メタリックピンク箔(箔2版目)" if FOIL_BACK
+                 else "ホワイト印刷 + ネオンピンク(スペシャルトナー2色)")
+    rows = ((front, "表", "ディープマット ブラック + メタリックピンク箔(箔1版目)"),
+            (back,  "裏", back_note))
     for i, (img, t, note) in enumerate(rows):
         y = pad + i * (h + lbl + pad)
         dr.text((pad, y), t, font=fb, fill=INK2)
