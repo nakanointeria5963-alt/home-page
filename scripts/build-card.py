@@ -44,7 +44,7 @@ PLATE    = dict(x=62.88, y=17.11, w=21.17, h=20.90, r=1.20)   # QRの白い下�
 # 白いプレートがそのまま兼ねるので、本体を余白ぶん縮める必要はない
 QR       = dict(symbol=15.8, src="qr-roguepink.png")
 # 表・箔押しの版。ロゴは仕上がりの中央に置く
-FOIL     = dict(src="logo-transparent.png", x=27.43, y=11.29, w=35.98, h=32.54)
+FOIL     = dict(src="logo-foil.pdf", x=27.43, y=11.29, w=35.98, h=32.54)
 
 def qr_matrix(png):
     """QRのPNGから、25×25のマス目を読み取る(余白4マスは除く)"""
@@ -162,14 +162,23 @@ def preview(dpi=600):
     print("プレビュー3枚を作り直した(card-front / card-back / card-option-black-paper)")
 
 def build_foil():
-    """表の箔版。ロゴの形だけを黒1色で置く(箔は濃淡を表現できないため)"""
+    """表の箔版。ロゴの形だけを黒1色で置く(箔は濃淡を表現できないため)
+
+    中身は scripts/trace-logo.py が作った輪郭データ(logo-foil.pdf)。
+    もとの PNG をそのまま貼ると縁に半透明の画素が残り、LEDA から
+    「文字の下部(R)が若干擦れている」と指摘された。輪郭に置き換えて解消してある。
+    """
+    src = BRAND / FOIL["src"]
+    if not src.exists():
+        sys.exit(f"{src.name} が無い。先に scripts/trace-logo.py を実行する")
     doc = pymupdf.open()
     page = doc.new_page(width=W, height=H)
     page.draw_rect(page.rect, color=None, fill=(PAPER,)*3)
     f = FOIL
-    page.insert_image(pymupdf.Rect(mm(f["x"]), mm(f["y"]),
-                                   mm(f["x"]+f["w"]), mm(f["y"]+f["h"])),
-                      pixmap=pymupdf.Pixmap(_png(flatten(BRAND / f["src"]))))
+    logo = pymupdf.open(src)
+    page.show_pdf_page(pymupdf.Rect(mm(f["x"]), mm(f["y"]),
+                                    mm(f["x"]+f["w"]), mm(f["y"]+f["h"])), logo, 0)
+    logo.close()
     return doc
 
 if __name__ == "__main__":

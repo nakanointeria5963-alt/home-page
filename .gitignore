@@ -43,3 +43,6 @@ next-env.d.ts
 # python
 __pycache__/
 *.pyc
+
+# 入稿データ用のフォント。scripts/fetch-fonts.sh で取り直せる
+fonts/
