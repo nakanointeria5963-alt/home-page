@@ -46,9 +46,10 @@ TEXT = [
     ("pink",  "はじまりは、",          7.0, _TAG_Y[0], _TAG[0], _TAG[1], 0.02),
     ("pink",  "「ありがとう」でした。",    7.0, _TAG_Y[1], _TAG[0], _TAG[1], 0.02),
     ("white", "roguepink.com",      7.0, 44.10, 2.95, 700, 0.0),
-    ("white", "info@roguepink.com", 7.0, 47.54, 2.35, 500, 0.0),
+    ("white", "info@roguepink.com", 7.0, 47.60, 2.45, 600, 0.0),
 ]
-WORDMARK = dict(plate="pink", src="logo-wordmark.png", x=7.05, y=7.05, w=24.87, h=2.65)
+# 裏のワードマークも箔になったので、表と同じ輪郭データを使う(scripts/trace-logo.py)
+WORDMARK = dict(plate="pink", src="logo-wordmark-foil.pdf", x=7.05, y=7.05, w=24.87, h=2.65)
 RULE     = dict(plate="pink", x=7.05, y=23.99, w=10.85, h=0.53)
 PLATE    = dict(x=62.88, y=17.11, w=21.17, h=20.90, r=1.20)   # QRの白い下地
 # QRは「コード本体」の大きさで指定する。まわりに必要な余白(4マス)は
@@ -98,9 +99,10 @@ def build(plate):
 
     if plate == "pink":
         w = WORDMARK
-        page.insert_image(pymupdf.Rect(mm(w["x"]), mm(w["y"]),
-                                       mm(w["x"]+w["w"]), mm(w["y"]+w["h"])),
-                          pixmap=pymupdf.Pixmap(_png(flatten(BRAND / w["src"]))))
+        mark = pymupdf.open(BRAND / w["src"])
+        page.show_pdf_page(pymupdf.Rect(mm(w["x"]), mm(w["y"]),
+                                        mm(w["x"]+w["w"]), mm(w["y"]+w["h"])), mark, 0)
+        mark.close()
         r = RULE
         page.draw_rect(pymupdf.Rect(mm(r["x"]), mm(r["y"]),
                                     mm(r["x"]+r["w"]), mm(r["y"]+r["h"])),
