@@ -74,19 +74,46 @@ for f, label in PLATES.items():
 
 # ---------------------------------------------------------------- 2. 色
 section("2. 色 —— グレースケール・中間の濃度")
+import re
 for f, label in PLATES.items():
     a, _ = ink(BRAND / f)
     grey = int(((a > 12) & (a < 243)).sum())
-    is_foil = "foil" in f or f == "card-back-pink.pdf"
-    if is_foil:
-        check(f"{label}: 中間の濃度が0(箔は濃淡を持てない)", grey == 0, f"{grey}px")
-    else:
-        check(f"{label}: 濃淡は文字のフチのみ", grey / a.size < 0.001,
-              f"{grey}px ({grey/a.size*100:.4f}%)")
+    check(f"{label}: 中間の濃度が0", grey == 0, f"{grey}px")
+
+    raw = (BRAND / f).read_bytes()
     d = pymupdf.open(BRAND / f)
-    cs = {i[5] for i in d[0].get_images()} | set()
+    cont = d[0].read_contents().decode("latin-1")
+    # 埋め込んだロゴの中身も同じように調べる
+    for x in d[0].get_xobjects():
+        try: cont += d.xref_stream(x[0]).decode("latin-1")
+        except Exception: pass
     d.close()
-    check(f"{label}: RGB/CMYK の色指定なし", True, "K1色で描画")
+    ops = set(re.findall(r"\b(g|rg|k|sc|scn)\b", cont))
+    check(f"{label}: 色の指定がグレー1色だけ(g)", ops <= {"g"},
+          f"使われている命令 {sorted(ops)}")
+    vals = {round(float(v), 4) for v in re.findall(r"([\d.]+)\s+g\b", cont)}
+    check(f"{label}: 濃度が 0 と 1 のみ", vals <= {0.0, 1.0}, f"{sorted(vals)}")
+    for key, name in ((b"/DeviceRGB", "RGB"), (b"/DeviceCMYK", "CMYK"),
+                      (b"/SMask", "透明マスク"), (b"/Shading", "グラデーション"),
+                      (b"/Pattern", "パターン"), (b"/HalftoneType", "網点指定")):
+        check(f"{label}: {name} が入っていない", raw.count(key) == 0,
+              f"{raw.count(key)}箇所")
+
+# ------------------------------------------------------- 2b. つなぎ目(スレ)
+section("2b. スレ —— 図形どうしのつなぎ目")
+# 印刷機は「ぼかしてから白黒に落とす」ことがある。隣り合う図形が別々に塗られていると
+# つなぎ目に中間色が残り、それを拾うとインクの中に細いスジが走る。
+# 縁から 0.02mm 以上内側に中間色があれば、それは縁のボケではなくつなぎ目。
+for f, label in PLATES.items():
+    hard, _ = ink(BRAND / f, dpi=2400, aa=0)
+    soft, _ = ink(BRAND / f, dpi=2400, aa=8)
+    mask = hard < 128
+    grey = (soft > 12) & (soft < 243)
+    k = np.ones((5, 5), np.uint8)
+    a_in = int((grey & cv2.erode(mask.astype(np.uint8), k).astype(bool)).sum())
+    b_in = int((grey & cv2.erode((~mask).astype(np.uint8), k).astype(bool)).sum())
+    check(f"{label}: インクの内側にスジなし", a_in == 0, f"{a_in}px")
+    check(f"{label}: 紙の内側にスジなし",     b_in == 0, f"{b_in}px")
 
 # ---------------------------------------------------------------- 3. 位置
 section("3. 位置 —— 仕上がり線からの余白")
@@ -149,6 +176,50 @@ det = cv2.QRCodeDetector()
 txt, _, _ = det.detectAndDecode(255 - a)
 check("実際に読み取れる(刷り上がりと同じ白黒で)", txt == "https://roguepink.com", f'"{txt}"')
 
+# QR 自身が持っている型式情報を読む。誤り訂正のレベルはここに書いてある
+_GEN, _XOR = 0b10100110111, 0b101010000010010
+def _bch(d):
+    v = d << 10
+    for i in range(4, -1, -1):
+        if v >> (i + 10) & 1: v ^= _GEN << i
+    return ((d << 10) | v) ^ _XOR
+_TABLE = {_bch(d): d for d in range(32)}
+_grid = np.array(card.qr_matrix(BRAND / card.QR["src"])[0], bool)
+_pos = [(8,0),(8,1),(8,2),(8,3),(8,4),(8,5),(8,7),(8,8),(7,8),
+        (5,8),(4,8),(3,8),(2,8),(1,8),(0,8)]
+_v = 0
+for r_, c_ in _pos: _v = (_v << 1) | int(_grid[r_][c_])
+_EC = {1: ("L", 7), 0: ("M", 15), 3: ("Q", 25), 2: ("H", 30)}
+_ok = _v in _TABLE
+_lvl = _EC[_TABLE[_v] >> 3] if _ok else ("?", 0)
+check("QRの型式情報が規格どおり", _ok, f"誤り訂正 {_lvl[0]}（約{_lvl[1]}%まで復元できる）")
+
+# 印刷の劣化を再現して、マス目が読み違えられないか。
+# 読み取りソフトの当たり外れに左右されないよう、マスの中心を1つずつ見る
+_n = _grid.shape[0]
+_cell = card.QR["symbol"] / _n
+_p = card.PLATE
+_qx = _p["x"] + (_p["w"] - card.QR["symbol"]) / 2
+_qy = _p["y"] + (_p["h"] - card.QR["symbol"]) / 2
+_PX = 600 / 25.4
+def _wrong(img):
+    bad = 0
+    for r_ in range(_n):
+        for c_ in range(_n):
+            x = int((_qx + (c_ + .5) * _cell) * _PX); y = int((_qy + (r_ + .5) * _cell) * _PX)
+            if (img[y, x] < 128) != bool(_grid[r_][c_]): bad += 1
+    return bad
+_card = 255 - a                                   # 刷り上がりの見え方
+_budget = int(_n * _n * _lvl[1] / 100)
+for _name, _img in (
+        ("そのまま",            _card),
+        ("白インクが0.15mm にじむ", cv2.dilate(_card, np.ones((int(0.15*_PX)|1,)*2, np.uint8))),
+        ("白インクが0.15mm やせる", cv2.erode(_card,  np.ones((int(0.15*_PX)|1,)*2, np.uint8))),
+        ("0.5mm ぼける",        cv2.GaussianBlur(_card, (int(0.5*_PX)|1,)*2, 0))):
+    _b = _wrong(_img)
+    check(f"劣化しても読み違えない({_name})", _b <= _budget // 3,
+          f"間違い {_b}マス / 許容 {_budget}マス")
+
 # ---------------------------------------------------------------- 6. 両面
 section("6. 表と裏の関係")
 fa, _ = ink(BRAND / "card-front-foil-plate.pdf", dpi=600)
@@ -165,6 +236,35 @@ dist = cv2.distanceTransform((~Wt).astype(np.uint8), cv2.DIST_L2, 5) / (600/25.4
 gap = float(dist[P_].min())
 check("裏でピンクと白が1mm以上離れている", gap >= 1.0, f"最短 {gap:.2f}mm")
 check("ピンクと白が重なっていない", not (P_ & Wt).any())
+
+# ---------------------------------------------------------------- 6b. 縁の質
+section("6b. 縁のなめらかさ")
+# ロゴは元が画像なので、輪郭に直しても縁に細かいうねりが残る。
+# 箔押しが出せる下限は 0.2mm(200μm)。その 1/4 = 50μm を上限とする。
+def _wobble(pdf, win_mm=0.15, dpi=4800):
+    pp = dpi / 25.4
+    pymupdf.TOOLS.set_aa_level(0)
+    d = pymupdf.open(pdf)
+    pm = d[0].get_pixmap(matrix=pymupdf.Matrix(dpi/72, dpi/72), colorspace=pymupdf.csGRAY)
+    arr = np.frombuffer(pm.samples, np.uint8).reshape(pm.height, pm.width).copy()
+    d.close()
+    cnts, _ = cv2.findContours((arr < 128).astype(np.uint8), cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+    win = max(3, int(round(win_mm * pp)) | 1)
+    got = []
+    for c in cnts:
+        if len(c) < win * 3: continue
+        q = c[:, 0, :].astype(np.float64)
+        k = np.ones(win) / win
+        sm = np.stack([np.convolve(np.r_[q[-win:, i], q[:, i], q[:win, i]], k, "same")[win:-win]
+                       for i in (0, 1)], 1)
+        got.append(np.hypot(*(q - sm).T))
+    return np.concatenate(got) / pp * 1000
+
+for _f, _label in (("logo-foil.pdf", "表ロゴの輪郭"),
+                   ("logo-wordmark-foil.pdf", "裏ワードマークの輪郭")):
+    _v = _wobble(BRAND / _f)
+    check(f"{_label}: うねりが 50μm 未満", np.percentile(_v, 90) < 50,
+          f"平均 {_v.mean():.1f}μm / 上位10% {np.percentile(_v,90):.1f}μm")
 
 # ---------------------------------------------------------------- 7. 文言
 section("7. 文言")

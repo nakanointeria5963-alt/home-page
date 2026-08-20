@@ -22,6 +22,8 @@ FONTS = Path(sys.argv[1] if len(sys.argv) > 1 else "fonts")
 MM = 72 / 25.4                      # 1mm を PDF のポイントに
 W, H = 91 * MM, 55 * MM             # 仕上がりサイズ。塗り足しなし
 INK, PAPER = 0, 1                   # 黒=インクが乗る / 白=乗らない
+# 色は必ず1つの数字で渡す。3つ組で渡すと PDF に DeviceRGB として書かれてしまい、
+# 「グレースケール(黒1色)」という申告と中身が食い違う
 
 def mm(v): return v * MM
 
@@ -80,7 +82,7 @@ def flatten(png):
 def build(plate):
     doc = pymupdf.open()
     page = doc.new_page(width=W, height=H)
-    page.draw_rect(page.rect, color=None, fill=(PAPER,)*3)
+    page.draw_rect(page.rect, color=None, fill=(PAPER,))
 
     fonts = {}
     for pl, _, _, _, _, wt, _ in TEXT:
@@ -94,7 +96,7 @@ def build(plate):
         cx = mm(x)
         for ch in txt:
             page.insert_text((cx, mm(y)), ch, fontname=f"n{wt}",
-                             fontsize=mm(size), color=(INK,)*3)
+                             fontsize=mm(size), color=(INK,))
             cx += fonts[wt].text_length(ch, fontsize=mm(size)) + mm(size) * sp
 
     if plate == "pink":
@@ -106,26 +108,40 @@ def build(plate):
         r = RULE
         page.draw_rect(pymupdf.Rect(mm(r["x"]), mm(r["y"]),
                                     mm(r["x"]+r["w"]), mm(r["y"]+r["h"])),
-                       color=None, fill=(INK,)*3)
+                       color=None, fill=(INK,))
 
     if plate == "white":
         p = PLATE
-        page.draw_rect(pymupdf.Rect(mm(p["x"]), mm(p["y"]),
-                                    mm(p["x"]+p["w"]), mm(p["y"]+p["h"])),
-                       radius=p["r"]/min(p["w"], p["h"]), color=None, fill=(INK,)*3)
-        # QRは白インクのベタ地に、紙の黒を抜いて作る ―― 黒いマスをインク無しにする
+        # QRは白インクのベタ地に、紙の黒を抜いて作る ―― 黒いマスをインク無しにする。
+        #
+        # ★ 白を上から塗るのではなく「1本の道」として穴をあける。
+        # マスを1つずつ別々に塗ると、隣り合う四角のつなぎ目に中間色が残り、
+        # 印刷機がそれを拾うと暗いマスの中に細いスジが走る(実測 19,670画素)。
+        # 外枠と穴をまとめて1回で塗れば、つなぎ目そのものが存在しなくなる。
         grid, n = qr_matrix(BRAND / QR["src"])
         cell = QR["symbol"] / n
         x0 = p["x"] + (p["w"] - QR["symbol"]) / 2
         y0 = p["y"] + (p["h"] - QR["symbol"]) / 2
         quiet = min(p["w"] - QR["symbol"], p["h"] - QR["symbol"]) / 2 / cell
         assert quiet >= 4, f"QRのまわりの余白が{quiet:.1f}マスしかない(4マス必要)"
+
+        shape = page.new_shape()
+        shape.draw_rect(pymupdf.Rect(mm(p["x"]), mm(p["y"]),
+                                     mm(p["x"]+p["w"]), mm(p["y"]+p["h"])),
+                        radius=p["r"]/min(p["w"], p["h"]))
         for r_i, row in enumerate(grid):
-            for c_i, on in enumerate(row):
-                if not on: continue
-                page.draw_rect(pymupdf.Rect(mm(x0 + c_i*cell), mm(y0 + r_i*cell),
-                                            mm(x0 + (c_i+1)*cell), mm(y0 + (r_i+1)*cell)),
-                               color=None, fill=(PAPER,)*3)
+            c_i = 0
+            while c_i < n:                      # 横に続くマスは1つの長方形にまとめる
+                if not row[c_i]:
+                    c_i += 1; continue
+                run = c_i
+                while run < n and row[run]: run += 1
+                shape.draw_rect(pymupdf.Rect(mm(x0 + c_i*cell), mm(y0 + r_i*cell),
+                                             mm(x0 + run*cell), mm(y0 + (r_i+1)*cell)))
+                c_i = run
+        # 奇偶ルール: 外枠の中にある四角は「穴」になる
+        shape.finish(color=None, fill=(INK,), even_odd=True, closePath=True)
+        shape.commit()
     return doc
 
 def _png(pil):
@@ -189,7 +205,7 @@ def build_foil():
         sys.exit(f"{src.name} が無い。先に scripts/trace-logo.py を実行する")
     doc = pymupdf.open()
     page = doc.new_page(width=W, height=H)
-    page.draw_rect(page.rect, color=None, fill=(PAPER,)*3)
+    page.draw_rect(page.rect, color=None, fill=(PAPER,))
     f = FOIL
     logo = pymupdf.open(src)
     page.show_pdf_page(pymupdf.Rect(mm(f["x"]), mm(f["y"]),
