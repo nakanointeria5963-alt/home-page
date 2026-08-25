@@ -36,11 +36,13 @@ export default function WritingPage() {
           </p>
         </SectionHeading>
 
-        <Reveal className="mt-20">
-          <EntryCard entry={FIRST_ENTRY} badge="はじまり" />
-        </Reveal>
+        <div id={FIRST_ENTRY.slug} className="mt-20">
+          <Reveal>
+            <EntryCard entry={FIRST_ENTRY} badge="はじまり" />
+          </Reveal>
+        </div>
 
-        <WritingList entries={REST_ENTRIES} />
+        <WritingList firstEntry={FIRST_ENTRY} entries={REST_ENTRIES} />
 
         <Reveal className="mt-20 text-center">
           <a

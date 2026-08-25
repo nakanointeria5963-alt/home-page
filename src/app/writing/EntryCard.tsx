@@ -14,7 +14,6 @@ type EntryCardProps = {
 export default function EntryCard({ entry, badge }: EntryCardProps) {
   return (
     <article
-      id={entry.slug}
       className="rounded-2xl border border-border bg-background-elevated p-8 sm:p-10"
     >
       {badge ? (
