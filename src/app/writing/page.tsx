@@ -4,6 +4,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
+import EntryCard from "./EntryCard";
+import WritingList from "./WritingList";
 import { WRITING_ENTRIES } from "./entries";
 
 export const metadata: Metadata = {
@@ -12,10 +14,14 @@ export const metadata: Metadata = {
     "素直に思ったことを、そのまま残していく場所。映画を作りながら考えたことも、それ以外のことも。",
 };
 
-function formatDate(date: string): string {
-  const [year, month, day] = date.split("-");
-  return `${year}年${Number(month)}月${Number(day)}日`;
-}
+// 日付の古い順に並べ直す(entries.ts の並び順に依存しないようにする)
+const BY_DATE_ASC = [...WRITING_ENTRIES].sort((a, b) =>
+  a.date.localeCompare(b.date),
+);
+
+// 一番はじめに出した1本は、上に固定して動かさない
+const FIRST_ENTRY = BY_DATE_ASC[0];
+const REST_ENTRIES = BY_DATE_ASC.slice(1);
 
 export default function WritingPage() {
   return (
@@ -30,31 +36,11 @@ export default function WritingPage() {
           </p>
         </SectionHeading>
 
-        <div className="mt-20 space-y-16">
-          {WRITING_ENTRIES.map((entry, index) => (
-            <Reveal key={entry.slug} delay={index * 0.1}>
-              <article
-                id={entry.slug}
-                className="rounded-2xl border border-border bg-background-elevated p-8 sm:p-10"
-              >
-                <time
-                  dateTime={entry.date}
-                  className="text-xs font-bold tracking-[0.3em] text-pink"
-                >
-                  {formatDate(entry.date)}
-                </time>
-                <h2 className="mt-3 text-xl font-black text-foreground sm:text-2xl">
-                  {entry.title}
-                </h2>
-                <div className="mt-6 space-y-4 text-sm leading-loose text-muted sm:text-base">
-                  {entry.paragraphs.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
-                </div>
-              </article>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal className="mt-20">
+          <EntryCard entry={FIRST_ENTRY} badge="はじまり" />
+        </Reveal>
+
+        <WritingList entries={REST_ENTRIES} />
 
         <Reveal className="mt-20 text-center">
           <a
