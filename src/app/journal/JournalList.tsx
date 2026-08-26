@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Reveal from "@/components/Reveal";
 import EntryCard from "./EntryCard";
-import type { JournalEntry } from "./entries";
+import { formatNo, type JournalEntry } from "./entries";
 
 type Order = "oldest" | "newest";
 
@@ -25,10 +25,6 @@ type JournalListProps = {
 function formatDate(date: string): string {
   const [year, month, day] = date.split("-");
   return `${year}年${Number(month)}月${Number(day)}日`;
-}
-
-function formatNo(no: number): string {
-  return `#${String(no).padStart(2, "0")}`;
 }
 
 export default function JournalList({ firstEntry, entries }: JournalListProps) {
@@ -122,11 +118,6 @@ export default function JournalList({ firstEntry, entries }: JournalListProps) {
                       <span className="text-pink">{formatNo(entry.no)}</span>
                       <span aria-hidden="true" className="h-2.5 w-px bg-border" />
                       <span className="text-muted">{formatDate(entry.date)}</span>
-                      {entry.slug === firstEntry.slug ? (
-                        <span className="rounded-full border border-pink/40 px-2 py-0.5 text-[0.6rem] tracking-[0.15em] text-pink-light">
-                          はじまり
-                        </span>
-                      ) : null}
                     </span>
                     <span className="text-sm font-bold leading-snug text-foreground sm:text-base">
                       {entry.title}

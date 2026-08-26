@@ -3,6 +3,9 @@ export type JournalEntry = {
    * 通し番号。一度決めたら二度と変えない。
    * 外(YouTubeの概要欄など)から「制作日誌 #05」と指せる住所なので、
    * 並び順から計算してはいけない。あとで昔の日付の記事を足したときに全部ずれる。
+   *
+   * 0 は「はじまり」。進み具合の報告ではなく始めますという挨拶なので、
+   * 数える対象の外に置く。番号は次の記事の #01 から始まる。
    */
   no: number;
   slug: string;
@@ -11,10 +14,15 @@ export type JournalEntry = {
   paragraphs: string[];
 };
 
+// 番号の見せ方。0 のときだけ数字ではなく「はじまり」と出す
+export function formatNo(no: number): string {
+  return no === 0 ? "はじまり" : `#${String(no).padStart(2, "0")}`;
+}
+
 // 新しい日誌は配列の先頭に追加する。no は「今の最大値 + 1」を必ず手で入れる
 export const JOURNAL_ENTRIES: JournalEntry[] = [
   {
-    no: 2,
+    no: 1,
     slug: "2026-08-20-tashikameru",
     date: "2026-08-20",
     title: "作るより、確かめるほうが難しい",
@@ -27,7 +35,7 @@ export const JOURNAL_ENTRIES: JournalEntry[] = [
     ],
   },
   {
-    no: 1,
+    no: 0,
     slug: "2026-08-07-start",
     date: "2026-08-07",
     title: "AIで、映画を作りはじめました",

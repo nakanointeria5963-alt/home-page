@@ -39,7 +39,7 @@ export default function JournalPage() {
         {/* 着地点(id)は、動かない外枠に付ける */}
         <div id={FIRST_ENTRY.slug} className="mt-20">
           <Reveal>
-            <EntryCard entry={FIRST_ENTRY} badge="はじまり" />
+            <EntryCard entry={FIRST_ENTRY} />
           </Reveal>
         </div>
 
