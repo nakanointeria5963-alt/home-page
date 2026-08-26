@@ -1,13 +1,20 @@
 export type JournalEntry = {
+  /**
+   * 通し番号。一度決めたら二度と変えない。
+   * 外(YouTubeの概要欄など)から「制作日誌 #05」と指せる住所なので、
+   * 並び順から計算してはいけない。あとで昔の日付の記事を足したときに全部ずれる。
+   */
+  no: number;
   slug: string;
   date: string;
   title: string;
   paragraphs: string[];
 };
 
-// 新しい日誌は配列の先頭に追加する
+// 新しい日誌は配列の先頭に追加する。no は「今の最大値 + 1」を必ず手で入れる
 export const JOURNAL_ENTRIES: JournalEntry[] = [
   {
+    no: 2,
     slug: "2026-08-20-tashikameru",
     date: "2026-08-20",
     title: "作るより、確かめるほうが難しい",
@@ -20,6 +27,7 @@ export const JOURNAL_ENTRIES: JournalEntry[] = [
     ],
   },
   {
+    no: 1,
     slug: "2026-08-07-start",
     date: "2026-08-07",
     title: "AIで、映画を作りはじめました",

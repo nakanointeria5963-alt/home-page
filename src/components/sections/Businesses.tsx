@@ -25,6 +25,11 @@ type Business = {
   products?: Product[];
 };
 
+// 制作日誌の最新は、日付で決める(配列の並び順に頼らない)
+const LATEST_JOURNAL = [...JOURNAL_ENTRIES].sort((a, b) =>
+  b.date.localeCompare(a.date),
+)[0];
+
 // 一番いま見せたいもの。横いっぱいで出す。
 // 映画が完成したら、ここを別の事業に差し替えるだけでトップの顔が変わる
 const FEATURED: Business = {
@@ -34,8 +39,8 @@ const FEATURED: Business = {
   icon: "film",
   status: "wip",
   stat: { value: JOURNAL_ENTRIES.length, unit: "本の制作日誌" },
-  latest: JOURNAL_ENTRIES[0]
-    ? { title: JOURNAL_ENTRIES[0].title, date: JOURNAL_ENTRIES[0].date }
+  latest: LATEST_JOURNAL
+    ? { title: LATEST_JOURNAL.title, date: LATEST_JOURNAL.date }
     : undefined,
   products: [{ label: "映画の制作日誌を読む", url: "/journal" }],
 };
