@@ -14,10 +14,12 @@ export const metadata: Metadata = {
     "素直に思ったことを、そのまま残していく場所。映画を作りながら考えたことも、それ以外のことも。",
 };
 
-// 日付の古い順に並べ直す(entries.ts の並び順に依存しないようにする)
-const BY_DATE_ASC = [...WRITING_ENTRIES].sort((a, b) =>
-  a.date.localeCompare(b.date),
-);
+// 日付の古い順に並べ直す(entries.ts の並び順に依存しないようにする)。
+// 配列は新しい順に積んでいるので、先に逆さにしてから並べ替える。
+// こうしないと、同じ日に2本出したとき、あとから書いたほうが先に来てしまう。
+const BY_DATE_ASC = [...WRITING_ENTRIES]
+  .reverse()
+  .sort((a, b) => a.date.localeCompare(b.date));
 
 // 一番はじめに出した1本は、上に固定して動かさない
 const FIRST_ENTRY = BY_DATE_ASC[0];
