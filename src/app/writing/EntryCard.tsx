@@ -1,3 +1,4 @@
+import ReadAloud from "@/components/ReadAloud";
 import type { WritingEntry } from "./entries";
 
 function formatDate(date: string): string {
@@ -9,9 +10,11 @@ type EntryCardProps = {
   entry: WritingEntry;
   /** 上に固定した1本目に付ける小さい札。付けないときは省略する */
   badge?: string;
+  /** 読み上げボタンを付けるか。いまは試しに1本だけ付けている */
+  readAloud?: boolean;
 };
 
-export default function EntryCard({ entry, badge }: EntryCardProps) {
+export default function EntryCard({ entry, badge, readAloud }: EntryCardProps) {
   return (
     <article
       className="rounded-2xl border border-border bg-background-elevated p-8 sm:p-10"
@@ -32,11 +35,15 @@ export default function EntryCard({ entry, badge }: EntryCardProps) {
       <h2 className="mt-3 text-xl font-black text-foreground sm:text-2xl">
         {entry.title}
       </h2>
-      <div className="mt-6 space-y-4 text-sm leading-loose text-muted sm:text-base">
-        {entry.paragraphs.map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
-        ))}
-      </div>
+      {readAloud ? (
+        <ReadAloud title={entry.title} paragraphs={entry.paragraphs} />
+      ) : (
+        <div className="mt-6 space-y-4 text-sm leading-loose text-muted sm:text-base">
+          {entry.paragraphs.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </div>
+      )}
     </article>
   );
 }
