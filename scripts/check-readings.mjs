@@ -71,7 +71,7 @@ for (const m of text.matchAll(/[一-龥]{2,}/g)) add(m[0]);
 //   (例:「正に変わる」を「まさに」と読む)。危ないものだけ名指しで見張る。
 //   前後の漢字とくっついている時は熟語なので数えない。
 // 「分」「方」は上の規則で処理しているので、ここには入れない
-const WATCH = "正悪生辛開角間下上際";
+const WATCH = "正誤悪生辛開角間下上際";
 for (const character of WATCH) {
   const re = new RegExp(`(^|[^一-龥])(${character})([^一-龥]|$)`, "g");
   for (const m of text.matchAll(re)) {
