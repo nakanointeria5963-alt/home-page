@@ -13,8 +13,6 @@ type WritingListProps = {
   firstEntry: WritingEntry;
   /** 古い順(1本目を除いたもの)で渡す */
   entries: WritingEntry[];
-  /** 読み上げボタンを付ける記事。いまは試しに1本だけ */
-  readAloudSlug?: string;
 };
 
 function formatDate(date: string): string {
@@ -22,11 +20,7 @@ function formatDate(date: string): string {
   return `${year}年${Number(month)}月${Number(day)}日`;
 }
 
-export default function WritingList({
-  firstEntry,
-  entries,
-  readAloudSlug,
-}: WritingListProps) {
+export default function WritingList({ firstEntry, entries }: WritingListProps) {
   const [order, setOrder] = useState<Order>("newest");
   const [indexOpen, setIndexOpen] = useState(false);
 
@@ -133,10 +127,7 @@ export default function WritingList({
           // Reveal の中に付けると、飛んだ直後に中身がずり上がってヘッダーに潜る
           <div key={entry.slug} id={entry.slug}>
             <Reveal delay={index * 0.1}>
-              <EntryCard
-                entry={entry}
-                readAloud={entry.slug === readAloudSlug}
-              />
+              <EntryCard entry={entry} />
             </Reveal>
           </div>
         ))}

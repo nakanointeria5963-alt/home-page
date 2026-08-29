@@ -1,3 +1,4 @@
+import ReadAloud from "@/components/ReadAloud";
 import { formatNo, type JournalEntry } from "./entries";
 
 function formatDate(date: string): string {
@@ -24,11 +25,7 @@ export default function EntryCard({ entry }: { entry: JournalEntry }) {
       <h2 className="mt-3 text-xl font-black text-foreground sm:text-2xl">
         {entry.title}
       </h2>
-      <div className="mt-6 space-y-4 text-sm leading-loose text-muted sm:text-base">
-        {entry.paragraphs.map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
-        ))}
-      </div>
+      <ReadAloud title={entry.title} paragraphs={entry.paragraphs} />
     </article>
   );
 }

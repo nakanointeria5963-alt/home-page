@@ -9,10 +9,12 @@ let stopPlaying: (() => void) | null = null;
 
 type Speed = "slow" | "normal" | "fast";
 
+// ノブさんから「全体的に遅い。前の『はやい』が『ふつう』でちょうどいい」。
+// 3段とも一段ずつ上げた(前: 0.85 / 1 / 1.2)
 const SPEEDS: [Speed, string, number][] = [
-  ["slow", "ゆっくり", 0.85],
-  ["normal", "ふつう", 1],
-  ["fast", "はやい", 1.2],
+  ["slow", "ゆっくり", 1],
+  ["normal", "ふつう", 1.2],
+  ["fast", "はやい", 1.45],
 ];
 
 // 段落まるごとを一息で読ませない。

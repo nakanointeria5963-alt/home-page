@@ -25,11 +25,6 @@ const BY_DATE_ASC = [...WRITING_ENTRIES]
 const FIRST_ENTRY = BY_DATE_ASC[0];
 const REST_ENTRIES = BY_DATE_ASC.slice(1);
 
-// 読み上げのお試し。いまは一番新しい1本だけに付けている。
-// 全部に広げるときは、ここを消して WritingList / EntryCard に
-// readAloud をいつも渡すようにする
-const READ_ALOUD_SLUG = BY_DATE_ASC[BY_DATE_ASC.length - 1].slug;
-
 export default function WritingPage() {
   return (
     <>
@@ -49,11 +44,7 @@ export default function WritingPage() {
           </Reveal>
         </div>
 
-        <WritingList
-          firstEntry={FIRST_ENTRY}
-          entries={REST_ENTRIES}
-          readAloudSlug={READ_ALOUD_SLUG}
-        />
+        <WritingList firstEntry={FIRST_ENTRY} entries={REST_ENTRIES} />
 
         <Reveal className="mt-20 text-center">
           <a
