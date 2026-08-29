@@ -149,8 +149,8 @@ export default function ReadAloud({ title, paragraphs }: ReadAloudProps) {
             aria-label={playing ? "読み上げを止める" : "この文章を読み上げる"}
             className={
               playing
-                ? "inline-flex items-center gap-2 rounded-full border border-pink/50 bg-pink/15 px-5 py-2.5 text-xs font-bold text-pink-light transition-colors sm:text-sm"
-                : "inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-xs font-bold text-muted transition-colors hover:border-pink/50 hover:text-pink-light sm:text-sm"
+                ? "inline-flex items-center gap-2 rounded-full border border-pink/50 bg-pink/15 px-5 py-3 text-xs font-bold text-pink-light transition-colors sm:text-sm"
+                : "inline-flex items-center gap-2 rounded-full border border-border px-5 py-3 text-xs font-bold text-muted transition-colors hover:border-pink/50 hover:text-pink-light sm:text-sm"
             }
           >
             <svg
@@ -181,8 +181,8 @@ export default function ReadAloud({ title, paragraphs }: ReadAloudProps) {
                 aria-pressed={speed === key}
                 className={
                   speed === key
-                    ? "rounded-full bg-pink/15 px-3.5 py-1.5 text-[0.7rem] font-bold text-pink-light transition-colors"
-                    : "rounded-full px-3.5 py-1.5 text-[0.7rem] font-bold text-muted transition-colors hover:text-pink-light"
+                    ? "rounded-full bg-pink/15 px-4 py-2.5 text-xs font-bold text-pink-light transition-colors"
+                    : "rounded-full px-4 py-2.5 text-xs font-bold text-muted transition-colors hover:text-pink-light"
                 }
               >
                 {label}
