@@ -105,6 +105,7 @@ export function toSpeech(text: string): string {
  * 中身に意味はない。増えていくだけ。
  */
 export const CHECKED_WORDS: string[] = [
+  "刺激",
   "悪",
   "180度変",
   "360度",
