@@ -18,7 +18,13 @@ const SOURCES = [
 // 辞書ファイルから、登録済みの言葉と「ふつうに読めるので登録不要」を抜き出す
 const dict = readFileSync("src/lib/reading.ts", "utf8");
 const known = new Set();
-for (const m of dict.matchAll(/^\s*\["([^"]+)",\s*"[^"]*"\]/gm)) known.add(m[1]);
+const pairs = [];
+for (const m of dict.matchAll(/^\s*\["([^"]+)",\s*"([^"]*)"\]/gm)) {
+  known.add(m[1]);
+  pairs.push([m[1], m[2]]);
+}
+// 長いものから先に置き換える(reading.ts と同じ決まり)
+pairs.sort((a, b) => b[0].length - a[0].length);
 const checkedBlock = dict.match(/CHECKED_WORDS[^=]*=\s*\[([\s\S]*?)\];/);
 if (checkedBlock) {
   for (const m of checkedBlock[1].matchAll(/"([^"]+)"/g)) known.add(m[1]);
@@ -40,6 +46,16 @@ for (const file of SOURCES) {
   }
 }
 
+// 登録済みの言い回しは、先に読みへ置き換えて消しておく。
+// 残ったものだけが「まだ見ていない言葉」になる。
+for (const [word, reading] of pairs) text = text.split(word).join(reading);
+
+// 規則で処理しているものも、同じように消しておく。
+// ⚠ ここは src/lib/reading.ts の toSpeech と同じ内容にしておくこと。
+//    片方だけ直すと、済んでいる言葉をまた報告するようになる。
+text = text.replace(/([ぁ-ん])分(?![かけ])/g, "$1ぶん");
+text = text.replace(/([ただる])方(?![法向面角程式針位])/g, "$1ほう");
+
 // 怪しい候補を拾う
 //  1. 漢字が2文字以上つづくもの(熟語・固有名詞)
 //  2. アルファベットが2文字以上つづくもの
@@ -50,6 +66,21 @@ const add = (word) => {
   candidates.set(word, (candidates.get(word) ?? 0) + 1);
 };
 for (const m of text.matchAll(/[一-龥]{2,}/g)) add(m[0]);
+
+// ★ 一文字の漢字は、上の regex では拾えない。だが一文字こそ機械が間違える
+//   (例:「正に変わる」を「まさに」と読む)。危ないものだけ名指しで見張る。
+//   前後の漢字とくっついている時は熟語なので数えない。
+// 「分」「方」は上の規則で処理しているので、ここには入れない
+const WATCH = "正悪生辛開角間下上際";
+for (const character of WATCH) {
+  const re = new RegExp(`(^|[^一-龥])(${character})([^一-龥]|$)`, "g");
+  for (const m of text.matchAll(re)) {
+    // 「正しい」「正す」のように送り仮名が続くものは、機械もふつうに読める。
+    // 危ないのは助詞が続くとき(「正に」→「まさに」)と、文の切れ目。
+    if (m[3] !== "" && !/[がのにをはもとでやへ、。」』]/.test(m[3])) continue;
+    add(m[2]);
+  }
+}
 for (const m of text.matchAll(/[A-Za-z][A-Za-z ]*[A-Za-z]/g)) add(m[0].trim());
 for (const m of text.matchAll(/[0-9]+[一-龥]{1,3}/g)) add(m[0]);
 
