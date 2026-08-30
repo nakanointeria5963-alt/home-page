@@ -432,4 +432,7 @@ export const CHECKED_WORDS: string[] = [
   "公式",
   "通話無料",
   "内容",
+  "無数",
+  "感動的",
+  "人間関係",
 ];
