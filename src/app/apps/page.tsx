@@ -9,7 +9,7 @@ import { APP_ENTRIES, APP_NOTES } from "./entries";
 export const metadata: Metadata = {
   title: "アプリ | ROGUE PINK",
   description:
-    "登録なし、ダウンロードなしで使えるアプリ。禁酒・節酒・禁煙の記録を、その端末の中だけに残します。",
+    "登録なし、ダウンロードなしで使えるアプリ。禁酒・節酒・禁煙・ギャンブル断ちの記録を、その端末の中だけに残します。",
 };
 
 export default function AppsPage() {
@@ -71,11 +71,11 @@ export default function AppsPage() {
           ))}
         </div>
 
-        {/* 3本に共通すること。カードの中で3回くり返さず、ここで1回だけ言う */}
+        {/* 4本に共通すること。カードの中で4回くり返さず、ここで1回だけ言う */}
         <Reveal delay={0.1} className="mt-16">
           <div className="rounded-2xl border border-border p-8 sm:p-10">
             <p className="text-xs font-black tracking-[0.2em] text-pink">
-              3つに共通すること
+              4つに共通すること
             </p>
             <ul className="mt-6 space-y-3">
               {APP_NOTES.map((note) => (
