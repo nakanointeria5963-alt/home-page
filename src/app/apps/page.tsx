@@ -4,12 +4,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
-import { APP_ENTRIES, APP_NOTES } from "./entries";
+import { APP_ENTRIES, APP_NOTES, APP_DISCLAIMERS } from "./entries";
 
 export const metadata: Metadata = {
   title: "アプリ | ROGUE PINK",
   description:
-    "登録なし、ダウンロードなしで使えるアプリ。禁酒・節酒・禁煙の記録を、その端末の中だけに残します。",
+    "登録なし、ダウンロードなしで使えるアプリ。禁酒・節酒・禁煙・ギャンブル断ちの記録を、その端末の中だけに残します。",
 };
 
 export default function AppsPage() {
@@ -71,11 +71,11 @@ export default function AppsPage() {
           ))}
         </div>
 
-        {/* 3本に共通すること。カードの中で3回くり返さず、ここで1回だけ言う */}
+        {/* 4本に共通すること。カードの中で4回くり返さず、ここで1回だけ言う */}
         <Reveal delay={0.1} className="mt-16">
           <div className="rounded-2xl border border-border p-8 sm:p-10">
             <p className="text-xs font-black tracking-[0.2em] text-pink">
-              3つに共通すること
+              4つに共通すること
             </p>
             <ul className="mt-6 space-y-3">
               {APP_NOTES.map((note) => (
@@ -91,11 +91,31 @@ export default function AppsPage() {
                 </li>
               ))}
             </ul>
-            <p className="mt-6 border-t border-border pt-6 text-xs leading-loose text-muted">
-              ※
-              これらは記録と気持ちの整理を手伝うアプリで、医療的な診断や治療をするものではありません。
-              からだの不調があるときは、お医者さんに相談してください。
-            </p>
+            <div className="mt-6 space-y-3 border-t border-border pt-6">
+              {APP_DISCLAIMERS.map((note) => (
+                <p
+                  key={typeof note === "string" ? note : note.telLabel}
+                  className="flex gap-2 text-xs leading-loose text-muted"
+                >
+                  <span aria-hidden="true">※</span>
+                  {typeof note === "string" ? (
+                    <span>{note}</span>
+                  ) : (
+                    <span>
+                      {note.before}
+                      {/* ボタンにはしない。番号のまま、掛けたい人だけが掛けられればいい */}
+                      <a
+                        href={`tel:${note.tel}`}
+                        className="whitespace-nowrap py-2 font-bold text-pink-light underline decoration-pink/40 underline-offset-4 transition-colors hover:decoration-pink"
+                      >
+                        {note.telLabel}
+                      </a>
+                      {note.after}
+                    </span>
+                  )}
+                </p>
+              ))}
+            </div>
           </div>
         </Reveal>
 
