@@ -94,11 +94,25 @@ export default function AppsPage() {
             <div className="mt-6 space-y-3 border-t border-border pt-6">
               {APP_DISCLAIMERS.map((note) => (
                 <p
-                  key={note}
+                  key={typeof note === "string" ? note : note.telLabel}
                   className="flex gap-2 text-xs leading-loose text-muted"
                 >
                   <span aria-hidden="true">※</span>
-                  <span>{note}</span>
+                  {typeof note === "string" ? (
+                    <span>{note}</span>
+                  ) : (
+                    <span>
+                      {note.before}
+                      {/* ボタンにはしない。番号のまま、掛けたい人だけが掛けられればいい */}
+                      <a
+                        href={`tel:${note.tel}`}
+                        className="whitespace-nowrap py-2 font-bold text-pink-light underline decoration-pink/40 underline-offset-4 transition-colors hover:decoration-pink"
+                      >
+                        {note.telLabel}
+                      </a>
+                      {note.after}
+                    </span>
+                  )}
                 </p>
               ))}
             </div>
