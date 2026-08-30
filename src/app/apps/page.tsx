@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
-import { APP_ENTRIES, APP_NOTES } from "./entries";
+import { APP_ENTRIES, APP_NOTES, APP_DISCLAIMERS } from "./entries";
 
 export const metadata: Metadata = {
   title: "アプリ | ROGUE PINK",
@@ -91,11 +91,17 @@ export default function AppsPage() {
                 </li>
               ))}
             </ul>
-            <p className="mt-6 border-t border-border pt-6 text-xs leading-loose text-muted">
-              ※
-              これらは記録と気持ちの整理を手伝うアプリで、医療的な診断や治療をするものではありません。
-              からだの不調があるときは、お医者さんに相談してください。
-            </p>
+            <div className="mt-6 space-y-3 border-t border-border pt-6">
+              {APP_DISCLAIMERS.map((note) => (
+                <p
+                  key={note}
+                  className="flex gap-2 text-xs leading-loose text-muted"
+                >
+                  <span aria-hidden="true">※</span>
+                  <span>{note}</span>
+                </p>
+              ))}
+            </div>
           </div>
         </Reveal>
 
