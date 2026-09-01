@@ -23,7 +23,7 @@ export const APP_ENTRIES: AppEntry[] = [
       "飲みたい波が来たら、60秒の深呼吸ガイド",
       "肝臓の絵が、30日かけて色を取り戻す",
     ],
-    url: "https://roguepink.github.io/kinnsyu/",
+    url: "https://kinshu.roguepink.com/",
   },
   {
     slug: "sesshu",
@@ -36,7 +36,7 @@ export const APP_ENTRIES: AppEntry[] = [
       "上限を超えた日も、通算の日数と節約額は消えない",
       "飲んだきっかけを記録して、傾向が見える",
     ],
-    url: "https://roguepink.github.io/sesshu/",
+    url: "https://sesshu.roguepink.com/",
   },
   {
     slug: "kinnenn",
@@ -49,7 +49,7 @@ export const APP_ENTRIES: AppEntry[] = [
       "吸いたくなったら、60秒の深呼吸ガイド",
       "肺の絵が、30日かけて色を取り戻す",
     ],
-    url: "https://roguepink.github.io/kinnenn/",
+    url: "https://kinen.roguepink.com/",
   },
   {
     slug: "dangyanburu",
@@ -62,18 +62,44 @@ export const APP_ENTRIES: AppEntry[] = [
       "乗り切った回数が、実績として積み上がる",
       "意志より環境を変える。カードを預ける、上限を決めるなどのチェックリスト",
     ],
-    url: "https://roguepink.github.io/dangyanburu/",
+    url: "https://dangamble.roguepink.com/",
+  },
+  {
+    slug: "tsukuru",
+    eyebrow: "職人さん・小さなお店の",
+    name: "ホームページ、つくってみる",
+    description:
+      "えらんで書き込むだけで、ホームページがその場で出来上がるアプリです。電気屋さん、水道屋さん、内装屋さんなど、仕事ごとの見本文章が最初から入っています。",
+    features: [
+      "業種をえらぶと、あいさつ文や料金表の見本が丸ごと入る",
+      "写真・電話番号・色・文字を、押しながら決められる",
+      "できたホームページは、そのままネットに出せる",
+    ],
+    url: "https://tsukuru.roguepink.com/",
+  },
+  {
+    slug: "sns",
+    eyebrow: "スマホがにがてな人の",
+    name: "はじめてのSNS",
+    description:
+      "LINE・YouTube・インスタグラムなどの始め方と使い方を、えらんで押していくだけで調べられる手引きです。詐欺への注意や、困ったときの相談先ものせています。",
+    features: [
+      "やりたいことを押すと、合うSNSと理由を教えてくれる",
+      "始め方を、1歩ずつの番号つきで案内",
+      "文字の大きさを3段階で変えられる",
+    ],
+    url: "https://sns.roguepink.com/",
   },
 ];
 
-// 4本に共通すること。カードごとに4回書くとうるさいので、ページの下に1回だけ出す
+// アプリに共通すること。カードごとに書くとうるさいので、ページの下に1回だけ出す
 export const APP_NOTES: string[] = [
   "無料です。登録も、ダウンロードも要りません。開けばすぐ使えます。",
   "記録は、その端末の中だけに残ります。外には送られません。",
   "バックアップが取れます。機種を変えるときは、忘れずに取ってください。",
   "スマホのホーム画面に入れると、アプリのように使えます。",
-  "日本語と英語、どちらでも使えます。",
-  "相談できる窓口の電話番号が入っています。番号はタップでそのまま掛けられます。",
+  "「やめる・減らす」の4本は、日本語と英語のどちらでも使えます。",
+  "「やめる・減らす」の4本には、相談できる窓口の電話番号が入っています。番号はタップでそのまま掛けられます。",
 ];
 
 // ページの一番下に出す注意書き。
