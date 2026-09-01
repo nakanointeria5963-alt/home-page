@@ -19,6 +19,7 @@ export const READING_DICTIONARY: [string, string][] = [
   ["MV", "エムブイ"],
   ["AI", "エーアイ"],
   ["聖奈", "セナ"],
+  ["TikTok", "ティックトック"],
 
   // --- 資格・専門の言葉 ---
   ["宅建", "たっけん"],
@@ -146,6 +147,8 @@ export const CHECKED_WORDS: string[] = [
   "相談先",
   "案内",
   "100点",
+  "毎日",
+  "共通",
   "刺激",
   "悪",
   "180度変",
