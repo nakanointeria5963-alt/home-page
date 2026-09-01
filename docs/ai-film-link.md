@@ -6,8 +6,8 @@
 
 | | 中身 | 公開 |
 |---|---|---|
-| **`nakanointeria5963-alt/home-page`**(ここ) | ROGUE PINK のサイト。**完成した文章だけ** | **public** |
-| **`nakanointeria5963-alt/ai-film-project`** | 映画の作業場。脚本・キャラ設定・素材・帳簿・口述メモ | **private** |
+| **`roguepink/home-page`**(ここ) | ROGUE PINK のサイト。**完成した文章だけ** | **public** |
+| **`roguepink/ai-film-project`** | 映画の作業場。脚本・キャラ設定・素材・帳簿・口述メモ | **private** |
 
 **本番の住所は https://roguepink.com。**
 `home-page-pnpg.vercel.app` も生きているが予備。**資料に載せるのは `roguepink.com` のほう。**
@@ -34,7 +34,7 @@
 
 ## 映画の棚を開ける手順
 
-1. `add_repo`(owner: `nakanointeria5963-alt`, repo: `ai-film-project`, access: `"push"`)
+1. `add_repo`(owner: `roguepink`, repo: `ai-film-project`, access: `"push"`)
 2. 返ってきた clone コマンドを実行
 3. `register_repo_root` を呼ぶ(向こうの `CLAUDE.md` が読み込まれる)
 

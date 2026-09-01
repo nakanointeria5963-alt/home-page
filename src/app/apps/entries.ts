@@ -23,7 +23,7 @@ export const APP_ENTRIES: AppEntry[] = [
       "飲みたい波が来たら、60秒の深呼吸ガイド",
       "肝臓の絵が、30日かけて色を取り戻す",
     ],
-    url: "https://nakanointeria5963-alt.github.io/kinnsyu/",
+    url: "https://roguepink.github.io/kinnsyu/",
   },
   {
     slug: "sesshu",
@@ -36,7 +36,7 @@ export const APP_ENTRIES: AppEntry[] = [
       "上限を超えた日も、通算の日数と節約額は消えない",
       "飲んだきっかけを記録して、傾向が見える",
     ],
-    url: "https://nakanointeria5963-alt.github.io/sesshu/",
+    url: "https://roguepink.github.io/sesshu/",
   },
   {
     slug: "kinnenn",
@@ -49,7 +49,7 @@ export const APP_ENTRIES: AppEntry[] = [
       "吸いたくなったら、60秒の深呼吸ガイド",
       "肺の絵が、30日かけて色を取り戻す",
     ],
-    url: "https://nakanointeria5963-alt.github.io/kinnenn/",
+    url: "https://roguepink.github.io/kinnenn/",
   },
   {
     slug: "dangyanburu",
@@ -62,7 +62,7 @@ export const APP_ENTRIES: AppEntry[] = [
       "乗り切った回数が、実績として積み上がる",
       "意志より環境を変える。カードを預ける、上限を決めるなどのチェックリスト",
     ],
-    url: "https://nakanointeria5963-alt.github.io/dangyanburu/",
+    url: "https://roguepink.github.io/dangyanburu/",
   },
 ];
 
