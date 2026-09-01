@@ -128,6 +128,8 @@ export function toSpeech(text: string): string {
  * 中身に意味はない。増えていくだけ。
  */
 export const CHECKED_WORDS: string[] = [
+  "保存",
+  "間",
   "4本",
   "1歩",
   "3段階",
